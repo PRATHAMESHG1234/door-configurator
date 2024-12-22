@@ -1,0 +1,17 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ant-menu-inline-collapsed .ant-menu-item {
+	padding: 0 24px !important;
+}
+
+.ant-menu-inline-collapsed .ant-menu-item .anticon {
+	margin: 0;
+	font-size: 18px;
+}
+
+.ant-layout-sider {
+	box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
