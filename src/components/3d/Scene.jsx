@@ -12,7 +12,7 @@ export function Scene({ design, color, handleStyle }) {
 		>
 			<Suspense fallback={null}>
 				<Stage
-					environment="city"
+					environment="warehouse"
 					intensity={0.5}
 				>
 					<Door
