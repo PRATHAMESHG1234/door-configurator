@@ -4,8 +4,7 @@ import Home from './pages/Home';
 // import Catalog from './pages/Catalog';
 import ConfiguratorPage from './pages/ConfiguratorPage';
 // import QuoteRequest from './pages/QuoteRequest';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import { Header, Footer } from './components/Header';
 
 const App = () => {
 	return (

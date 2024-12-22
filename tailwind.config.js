@@ -1,6 +1,9 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-	important: true, // Add this to give Tailwind classes higher specificity
-	content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
+	content: [
+		'./index.html',
+		'./src/**/*.{js,jsx,ts,tsx}', // Include all React files
+	],
 	theme: {
 		extend: {},
 	},
