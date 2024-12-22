@@ -113,7 +113,10 @@ export const Footer = () => {
 	const currentYear = new Date().getFullYear();
 
 	return (
-		<footer className="bg-gray-900 text-gray-300">
+		<footer
+			className="bg-gray-900 text-gray-300"
+			style={{ zIndex: 10000 }}
+		>
 			<div className="max-w-7xl mx-auto px-4 py-12">
 				<div className="grid grid-cols-1 md:grid-cols-4 gap-8">
 					{/* Company Info */}
