@@ -1,5 +1,5 @@
 // src/components/3d/HandleGeometry.jsx
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { DoubleSide, Vector3, BufferGeometry, BufferAttribute } from 'three';
 import { Cylinder, Box } from '@react-three/drei';
 
@@ -355,12 +355,14 @@ export function HandleGeometry({ style, position }) {
 					rotation={diamondRotation}
 				>
 					<boxGeometry
-						args={[
-							style.dimensions.width,
-							style.dimensions.height,
-							style.dimensions.depth,
-						]}
+						width={style.dimensions.width}
+						height={style.dimensions.height}
+						depth={style.dimensions.depth}
+						widthSegments={style.dimensions.widthSegments || 1} // Optional, defaults to 1
+						heightSegments={style.dimensions.heightSegments || 1} // Optional, defaults to 1
+						depthSegments={style.dimensions.depthSegments || 1} // Optional, defaults to 1
 					/>
+
 					<meshStandardMaterial {...standardMaterial} />
 				</mesh>
 			);

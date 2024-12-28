@@ -1,5 +1,3 @@
-import React from 'react';
-
 export function Sidebar({ activeSidebar, setActiveSidebar }) {
 	return (
 		<div className="w-64 bg-gray-50 border-r border-gray-200 p-4">

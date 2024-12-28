@@ -1,5 +1,5 @@
 // src/components/panels/ColorPanel.jsx
-import React from 'react';
+
 import { ColorPicker, Slider } from 'antd';
 
 export function ColorPanel({ selectedColor, setSelectedColor, colorPresets }) {

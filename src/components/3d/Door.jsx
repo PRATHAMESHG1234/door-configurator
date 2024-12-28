@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { DoubleSide } from 'three';
 import { useTexture } from '@react-three/drei';
 import { HandleGeometry } from './HandleGeometry';
@@ -16,8 +16,8 @@ function Door({ design, color, handleStyle, selected, onSelect, onDeselect }) {
 	useFrame((state) => {
 		if (isDragging.current && meshRef.current) {
 			const { x, y } = state.pointer;
-			meshRef.current.position.x = x * 1;
-			meshRef.current.position.y = y * 1;
+			meshRef.current.position.x = x * 5; // Adjust multiplier based on scene scale
+			meshRef.current.position.y = y * 5; // Adjust multiplier based on scene scale
 		}
 
 		if (isRotating.current && meshRef.current) {
@@ -84,28 +84,37 @@ function Door({ design, color, handleStyle, selected, onSelect, onDeselect }) {
 			onPointerOut={handlePointerOut}
 		>
 			{/* Door Mesh */}
-			<mesh>
-				<boxGeometry args={[1, 2, 0.05]} />
-				<meshStandardMaterial
-					map={texture} // Apply PNG texture
-					color={color?.value || '#ffffff'} // Apply tint or overlay color
-					side={DoubleSide}
-					emissive={selected ? '#ffffff' : '#000000'} // Highlight when selected
-					emissiveIntensity={selected ? 0.2 : 0}
-					transparent={true} // Respect transparency in PNG
-					alphaTest={0.5} // Remove fully transparent areas
-				/>
-			</mesh>
+			<mesh
+				geometry={
+					<boxGeometry
+						args={[1, 2, 0.05]} // Dimensions: width, height, depth
+					/>
+				}
+				material={
+					<meshStandardMaterial
+						map={texture} // Apply PNG texture
+						color={color?.value || '#ffffff'} // Apply tint or overlay color
+						side={DoubleSide} // Render both sides
+						emissive={selected ? '#ffffff' : '#000000'} // Highlight when selected
+						emissiveIntensity={selected ? 0.2 : 0} // Adjust emissive light
+						transparent={true} // Respect transparency in PNG
+						alphaTest={0.5} // Remove fully transparent areas
+					/>
+				}
+			/>
 
 			{/* Handle Mesh */}
-			<mesh position={[0.4, 0, 0.035]}>
-				<HandleGeometry style={handleStyle} />
-				<meshStandardMaterial
-					color={selected ? '#aaaaaa' : '#808080'}
-					metalness={0.9}
-					roughness={0.2}
-				/>
-			</mesh>
+			<mesh
+				position={[0.4, 0, 0.035]} // Adjust position of the handle
+				geometry={<HandleGeometry style={handleStyle} />} // Handle geometry
+				material={
+					<meshStandardMaterial
+						color={selected ? '#aaaaaa' : '#808080'} // Highlight color
+						metalness={0.9} // Metallic property
+						roughness={0.2} // Surface roughness
+					/>
+				}
+			/>
 		</group>
 	);
 }

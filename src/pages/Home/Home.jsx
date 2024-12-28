@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -16,7 +16,7 @@ import {
 import KonfiguratorPreview from '../../assets/images/konfigurator-preview.png';
 import ProKonfigurator from '../../assets/images/pro-konfigurator.png';
 
-const FeaturePoint = ({ icon, text, subtext }) => (
+const FeaturePoint = ({ text, subtext }) => (
 	<div
 		className="feature-point py-6 px-4"
 		data-aos="fade-up"

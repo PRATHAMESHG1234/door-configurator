@@ -1,5 +1,5 @@
 // src/pages/Catalog.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -367,7 +367,7 @@ const Catalog = () => {
 						className="text-3xl font-semibold mb-6"
 						data-aos="fade-up"
 					>
-						Can't find what you're looking for?
+						Can&apos;t find what you&apos;re looking for?
 					</h2>
 					<p
 						className="text-gray-600 mb-8 max-w-2xl mx-auto"

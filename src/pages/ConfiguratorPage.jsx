@@ -1,5 +1,5 @@
 // src/components/DoorConfigurator.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { doorData } from '../data/doorData';
 import { colorPresets } from '../data/colorPresets';
 import { handleStyles } from '../data/handleStyles';

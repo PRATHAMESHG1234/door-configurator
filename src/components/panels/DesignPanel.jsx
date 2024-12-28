@@ -1,5 +1,4 @@
 // src/components/panels/DesignPanel.jsx
-import React from 'react';
 
 export function DesignPanel({
 	selectedDesign,
