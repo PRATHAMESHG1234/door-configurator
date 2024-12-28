@@ -1,0 +1,41 @@
+/* Catalog.css */
+.door-card {
+	@apply bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300;
+}
+
+.door-image {
+	@apply w-full h-[400px] object-cover transition-transform duration-300;
+}
+
+.door-overlay {
+	@apply absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 
+           transition-all duration-300 flex items-center justify-center;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes slideUp {
+	from {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.fade-in {
+	animation: fadeIn 0.5s ease-out;
+}
+
+.slide-up {
+	animation: slideUp 0.5s ease-out;
+}

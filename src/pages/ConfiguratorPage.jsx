@@ -1,6 +1,6 @@
 // src/components/DoorConfigurator.jsx
-import React, { useState, Suspense } from 'react';
-import { doorDesigns } from '../data/doorDesigns';
+import React, { useState } from 'react';
+import { doorData } from '../data/doorData';
 import { colorPresets } from '../data/colorPresets';
 import { handleStyles } from '../data/handleStyles';
 import { Sidebar } from '../components/navigation/Sidebar';
@@ -10,13 +10,13 @@ import { ColorPanel } from '../components/panels/ColorPanel';
 import { HandlePanel } from '../components/panels/HandlePanel';
 
 function DoorConfigurator() {
-	const [selectedDesign, setSelectedDesign] = useState(doorDesigns[0]);
+	const [selectedDoor, setSelectedDoor] = useState(doorData[0]);
 	const [selectedColor, setSelectedColor] = useState(colorPresets[0]);
 	const [handleStyle, setHandleStyle] = useState(handleStyles[0]);
 	const [activeSidebar, setActiveSidebar] = useState('design');
 
 	const totalPrice = () => {
-		return selectedDesign.price + handleStyle.price;
+		return selectedDoor.price + handleStyle.price;
 	};
 
 	return (
@@ -38,7 +38,7 @@ function DoorConfigurator() {
 					/>
 					<div className="absolute inset-0">
 						<Scene
-							design={selectedDesign}
+							door={selectedDoor} // Pass the selected door data
 							color={selectedColor}
 							handleStyle={handleStyle}
 						/>
@@ -52,9 +52,9 @@ function DoorConfigurator() {
 						<div className="p-6">
 							{activeSidebar === 'design' && (
 								<DesignPanel
-									selectedDesign={selectedDesign}
-									setSelectedDesign={setSelectedDesign}
-									doorDesigns={doorDesigns}
+									selectedDesign={selectedDoor}
+									setSelectedDesign={setSelectedDoor}
+									doorDesigns={doorData} // Use doorData here
 								/>
 							)}
 							{activeSidebar === 'color' && (

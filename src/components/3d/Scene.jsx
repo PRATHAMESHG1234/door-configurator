@@ -6,60 +6,69 @@ import {
 	Html,
 	PerspectiveCamera,
 } from '@react-three/drei';
-import { Menu, Alert, Card, Typography, Button } from 'antd';
-import {
-	EditOutlined,
-	CopyOutlined,
-	DeleteOutlined,
-	SettingOutlined,
-} from '@ant-design/icons';
+import { Menu, Alert } from 'antd';
 import Door from './Door';
 
-const { Title, Text } = Typography;
-
-function Scene3D({ handleStyle }) {
+function Scene3D({ door, color, handleStyle }) {
 	const [contextMenu, setContextMenu] = useState(null);
-	const [selectedObjectData, setSelectedObjectData] = useState(null);
-	const [camera, setCamera] = useState({ position: [0, 0, 2.5], fov: 50 });
+	const [camera, setCamera] = useState({ position: [0, 0, 5], fov: 50 });
+	const [doorPosition, setDoorPosition] = useState([0, 0, 0]); // Center the door
+	const [isDragging, setIsDragging] = useState(false);
 
+	// Handle context menu
 	const handleContextMenu = useCallback((event) => {
 		event.preventDefault();
 		setContextMenu([event.clientX, event.clientY]);
 	}, []);
 
-	const handleClick = useCallback((event) => {
-		if (event.button === 0 && event.object) {
-			setSelectedObjectData({
-				type: event.object.type || 'Unknown',
-				position: event.object.position.toArray(),
-			});
+	// Handle drag start
+	const handleDragStart = (event) => {
+		event.stopPropagation();
+		setIsDragging(true);
+		document.body.style.cursor = 'grabbing'; // Show grabbing cursor
+	};
+
+	// Handle drag move
+	const handleDragMove = (event) => {
+		if (isDragging) {
+			event.stopPropagation();
+			const { x, y } = event.unprojectedPoint; // Use unprojectedPoint for accurate positioning
+			setDoorPosition([x, y, doorPosition[2]]);
 		}
-	}, []);
+	};
+
+	// Handle drag end
+	const handleDragEnd = (event) => {
+		event.stopPropagation();
+		setIsDragging(false);
+		document.body.style.cursor = 'default'; // Reset cursor
+	};
 
 	const handleAction = useCallback((action) => {
 		switch (action) {
 			case 'edit':
+				// Placeholder for edit logic
 				break;
 			case 'duplicate':
+				// Placeholder for duplication logic
 				break;
 			case 'delete':
-				setSelectedObjectData(null);
+				// Placeholder for deletion logic
+				break;
+			default:
 				break;
 		}
 		setContextMenu(null);
 	}, []);
 
 	const menuItems = [
-		{ key: 'edit', label: 'Edit Properties', icon: <EditOutlined /> },
-		{ key: 'duplicate', label: 'Duplicate', icon: <CopyOutlined /> },
-		{ key: 'delete', label: 'Delete', icon: <DeleteOutlined /> },
+		{ key: 'edit', label: 'Edit Properties' },
+		{ key: 'duplicate', label: 'Duplicate' },
+		{ key: 'delete', label: 'Delete' },
 	];
 
 	return (
-		<div
-			className="relative w-full h-full"
-			onContextMenu={handleContextMenu}
-		>
+		<div className="relative w-full h-full">
 			<Canvas shadows>
 				<PerspectiveCamera
 					makeDefault
@@ -80,29 +89,33 @@ function Scene3D({ handleStyle }) {
 						environment="warehouse"
 						intensity={0.5}
 					>
-						<Door
-							handleStyle={handleStyle}
-							onClick={handleClick}
-							selected={!!selectedObjectData}
-						/>
+						{/* Draggable Door */}
+						<group
+							position={doorPosition}
+							onPointerDown={handleDragStart}
+							onPointerMove={handleDragMove}
+							onPointerUp={handleDragEnd}
+						>
+							<Door
+								design={door}
+								color={color}
+								handleStyle={handleStyle}
+							/>
+						</group>
 					</Stage>
 					<OrbitControls
-						minDistance={1.5}
-						maxDistance={4}
+						enabled={!isDragging} // Disable controls during dragging
+						minDistance={2}
+						maxDistance={10}
 						enablePan={true}
 						enableZoom={true}
-						minPolarAngle={Math.PI / 4}
-						maxPolarAngle={Math.PI / 1.5}
-						onChange={(e) => {
-							setCamera((prev) => ({
-								...prev,
-								position: e.target?.object.position.toArray(),
-							}));
-						}}
+						minPolarAngle={0}
+						maxPolarAngle={Math.PI}
 					/>
 				</Suspense>
 			</Canvas>
 
+			{/* Context Menu */}
 			{contextMenu && (
 				<Menu
 					items={menuItems}
@@ -115,33 +128,16 @@ function Scene3D({ handleStyle }) {
 					}}
 				/>
 			)}
-
-			{selectedObjectData && (
-				<Card
-					title={<Title level={5}>Selected Component</Title>}
-					extra={<Button icon={<SettingOutlined />} />}
-					style={{
-						position: 'absolute',
-						top: 16,
-						right: 16,
-						width: 300,
-					}}
-				>
-					<div className="space-y-2">
-						<Text strong>Type: </Text>
-						<Text>{selectedObjectData.type}</Text>
-						<br />
-						<Text strong>Position: </Text>
-						<Text>
-							{selectedObjectData.position.map((n) => n.toFixed(2)).join(', ')}
-						</Text>
-					</div>
-				</Card>
-			)}
 		</div>
 	);
 }
 
-export function Scene(props) {
-	return <Scene3D {...props} />;
+export function Scene({ door, color, handleStyle }) {
+	return (
+		<Scene3D
+			door={door}
+			color={color}
+			handleStyle={handleStyle}
+		/>
+	);
 }
