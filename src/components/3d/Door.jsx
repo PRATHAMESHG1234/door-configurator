@@ -1,43 +1,44 @@
-// src/components/3d/Door.jsx
 import React from 'react';
 import { DoubleSide } from 'three';
+import { useTexture } from '@react-three/drei';
+import doorImage from '../../assets/doors/19-20.jpg';
 import { HandleGeometry } from './HandleGeometry';
 
-export function Door({ design, color, handleStyle }) {
+function Door({ handleStyle, onClick, selected }) {
+	const texture = useTexture(doorImage);
+
 	return (
-		<group>
-			{/* Main door body */}
-			<mesh position={[0, 0, 0]}>
+		<group
+			onClick={onClick}
+			onPointerOver={(e) => {
+				e.stopPropagation();
+				document.body.style.cursor = 'pointer';
+			}}
+			onPointerOut={() => {
+				document.body.style.cursor = 'default';
+			}}
+		>
+			<mesh>
 				<boxGeometry args={[1, 2, 0.05]} />
 				<meshStandardMaterial
-					color={color.hex}
-					metalness={color.metalness}
-					roughness={color.roughness}
+					map={texture}
 					side={DoubleSide}
+					emissive={selected ? '#ffffff' : '#000000'}
+					emissiveIntensity={selected ? 0.2 : 0}
 				/>
 			</mesh>
 
-			{/* Door panels */}
-			{design.panels.map((panel, index) => (
-				<mesh
-					key={index}
-					position={panel.position}
-				>
-					<boxGeometry args={panel.size} />
-					<meshStandardMaterial
-						color={color.hex}
-						metalness={color.metalness}
-						roughness={color.roughness - 0.1}
-						side={DoubleSide}
-					/>
-				</mesh>
-			))}
-
-			{/* Door handle */}
-			<HandleGeometry
-				style={handleStyle}
-				position={[0.4, 0, 0.035]}
-			/>
+			{/* Handle with same interaction capabilities */}
+			<mesh position={[0.4, 0, 0.035]}>
+				<HandleGeometry style={handleStyle} />
+				<meshStandardMaterial
+					color={selected ? '#aaaaaa' : '#808080'}
+					metalness={0.9}
+					roughness={0.2}
+				/>
+			</mesh>
 		</group>
 	);
 }
+
+export default Door;
