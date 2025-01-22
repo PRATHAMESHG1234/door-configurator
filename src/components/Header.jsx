@@ -42,11 +42,6 @@ export const Header = () => {
 		{ to: '/', label: 'Home', icon: <HomeOutlined /> },
 		{ to: '/catalog', label: 'Catalog', icon: <AppstoreOutlined /> },
 		{ to: '/configurator', label: 'Configurator', icon: <ToolOutlined /> },
-		{
-			to: '/quote-request',
-			label: 'Quote Request',
-			icon: <FileTextOutlined />,
-		},
 	];
 
 	return (

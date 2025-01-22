@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
 import Catalog from './pages/Catalog/Catalog';
-import ConfiguratorPage from './pages/ConfiguratorPage';
 // import QuoteRequest from './pages/QuoteRequest';
 import { Header, Footer } from './components/Header';
+import { DoorConfigurator } from './pages/configurator/DoorConfigurator';
 
 const App = () => {
 	return (
@@ -20,7 +20,7 @@ const App = () => {
 				/>
 				<Route
 					path="/configurator"
-					element={<ConfiguratorPage />}
+					element={<DoorConfigurator />}
 				/>
 				{/* <Route
 					path="/quote-request"

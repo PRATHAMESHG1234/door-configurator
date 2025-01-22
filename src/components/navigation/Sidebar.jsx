@@ -1,37 +1,26 @@
-export function Sidebar({ activeSidebar, setActiveSidebar }) {
+export function Sidebar({ activeSidebar, setActiveSidebar, items }) {
 	return (
 		<div className="w-64 bg-gray-50 border-r border-gray-200 p-4">
 			<div className="space-y-2">
-				<button
-					onClick={() => setActiveSidebar('design')}
-					className={`w-full p-2 text-left rounded ${
-						activeSidebar === 'design'
-							? 'bg-blue-50 text-blue-600'
-							: 'hover:bg-gray-100'
-					}`}
-				>
-					Design
-				</button>
-				<button
-					onClick={() => setActiveSidebar('color')}
-					className={`w-full p-2 text-left rounded ${
-						activeSidebar === 'color'
-							? 'bg-blue-50 text-blue-600'
-							: 'hover:bg-gray-100'
-					}`}
-				>
-					Color & Material
-				</button>
-				<button
-					onClick={() => setActiveSidebar('handle')}
-					className={`w-full p-2 text-left rounded ${
-						activeSidebar === 'handle'
-							? 'bg-blue-50 text-blue-600'
-							: 'hover:bg-gray-100'
-					}`}
-				>
-					Handle
-				</button>
+				{items.map((item) => (
+					<button
+						key={item.id}
+						onClick={() => setActiveSidebar(item.id)}
+						className={`
+                            w-full p-3 text-left rounded-lg transition-colors
+                            ${
+															activeSidebar === item.id
+																? 'bg-blue-50 text-blue-600 font-medium'
+																: 'text-gray-600 hover:bg-gray-100'
+														}
+                        `}
+					>
+						<span className="flex items-center">
+							{item.icon && <item.icon className="w-5 h-5 mr-2" />}
+							{item.label}
+						</span>
+					</button>
+				))}
 			</div>
 		</div>
 	);

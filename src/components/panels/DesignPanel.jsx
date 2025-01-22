@@ -1,4 +1,7 @@
 // src/components/panels/DesignPanel.jsx
+import { Card, Typography, Row, Col, Image } from 'antd';
+
+const { Title, Text } = Typography;
 
 export function DesignPanel({
 	selectedDesign,
@@ -6,36 +9,75 @@ export function DesignPanel({
 	doorDesigns,
 }) {
 	return (
-		<div className="space-y-4">
-			<h3 className="text-lg font-medium">Door Design</h3>
-			<div className="grid grid-cols-2 gap-4">
-				{doorDesigns.map((door) => (
-					<div
-						key={door.id}
-						onClick={() => setSelectedDesign(door)}
-						className={`p-4 rounded-lg cursor-pointer ${
-							selectedDesign.id === door.id
-								? 'bg-blue-50 border-blue-500'
-								: 'bg-white border-gray-200'
-						} border-2`}
+		<div style={{ padding: '0', overflowX: 'hidden' }}>
+			<Title
+				level={4}
+				style={{ marginBottom: 24 }}
+			>
+				Door Design
+			</Title>
+
+			<Row gutter={[16, 16]}>
+				{doorDesigns?.map((design) => (
+					<Col
+						span={12}
+						key={design.id}
 					>
-						{/* Display the door name */}
-						<h4 className="font-medium">{door.name}</h4>
-
-						{/* Display the door price */}
-						<p className="text-blue-600">${door.price}</p>
-
-						{/* Display the door image */}
-						<div className="mt-2">
-							<img
-								src={door.images.front}
-								alt={door.name}
-								className="w-full h-20 object-cover rounded-md"
-							/>
-						</div>
-					</div>
+						<Card
+							hoverable
+							bodyStyle={{ padding: 12 }}
+							onClick={() => setSelectedDesign(design)}
+							style={{
+								borderColor:
+									selectedDesign?.id === design.id ? '#1890ff' : undefined,
+								backgroundColor:
+									selectedDesign?.id === design.id ? '#e6f7ff' : undefined,
+								cursor: 'pointer',
+							}}
+							cover={
+								<div style={{ padding: 8 }}>
+									<Image
+										src={design.thumbnail}
+										alt={design.name}
+										style={{
+											width: '100%',
+											height: 'auto',
+											borderRadius: 8,
+											objectFit: 'cover',
+											aspectRatio: '1',
+										}}
+										preview={false}
+									/>
+								</div>
+							}
+						>
+							<div style={{ textAlign: 'center' }}>
+								<Text strong>{design.name}</Text>
+								{/* {design.description && (
+									<Text
+										type="secondary"
+										style={{ display: 'block', marginTop: 4 }}
+									>
+										{design.description}
+									</Text>
+								)} */}
+								{design.basePrice && (
+									<div style={{ marginTop: 8 }}>
+										<Text type="secondary">Base Price: </Text>
+										<Text
+											type="primary"
+											strong
+											style={{ color: '#1890ff' }}
+										>
+											${design.basePrice}
+										</Text>
+									</div>
+								)}
+							</div>
+						</Card>
+					</Col>
 				))}
-			</div>
+			</Row>
 		</div>
 	);
 }

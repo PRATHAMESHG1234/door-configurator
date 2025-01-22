@@ -10,13 +10,9 @@ import {
 	ArrowRightOutlined,
 	CloseOutlined,
 } from '@ant-design/icons';
-import {
-	doorData,
-	categories,
-	features,
-	priceRanges,
-} from '../../data/doorData';
 import './Catalog.css';
+import { doorStyles } from '../../config/doorStyles';
+import { categories, features, priceRanges } from '../../config/data';
 
 const DoorCard = ({ door }) => {
 	const [showBackImage, setShowBackImage] = useState(false);
@@ -29,7 +25,7 @@ const DoorCard = ({ door }) => {
 		>
 			<div className="relative group">
 				<img
-					src={showBackImage ? door.images.back : door.images.front}
+					src={showBackImage ? door.texture : door.thumbnail}
 					alt={door.name}
 					className="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105"
 					onMouseEnter={() => setShowBackImage(true)}
@@ -60,7 +56,7 @@ const DoorCard = ({ door }) => {
 				</div>
 				<div className="mt-4 pt-4 border-t flex justify-between items-center">
 					<span className="text-[#8C285D] font-semibold">
-						€{door.price.toLocaleString()}
+						€{door.basePrice.toLocaleString()}
 					</span>
 					<button className="text-[#8C285D] hover:text-[#A0436B] transition-colors">
 						Learn More <ArrowRightOutlined className="ml-1" />
@@ -207,7 +203,7 @@ const Catalog = () => {
 	};
 
 	const getFilteredDoors = () => {
-		return doorData.filter((door) => {
+		return doorStyles.filter((door) => {
 			// Search term filter
 			if (
 				searchTerm &&

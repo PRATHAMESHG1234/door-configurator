@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+	overflow-x: hidden;
+}
 .ant-menu-inline-collapsed .ant-menu-item {
 	padding: 0 24px !important;
 }

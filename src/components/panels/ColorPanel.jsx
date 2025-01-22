@@ -1,64 +1,137 @@
 // src/components/panels/ColorPanel.jsx
+import { Card, Slider, ColorPicker, Typography, Row, Col } from 'antd';
+import { BgColorsOutlined } from '@ant-design/icons';
 
-import { ColorPicker, Slider } from 'antd';
+const { Title, Text } = Typography;
 
-export function ColorPanel({ selectedColor, setSelectedColor, colorPresets }) {
+export function ColorPanel({
+	selectedMaterial,
+	setSelectedMaterial,
+	materialPresets,
+}) {
+	const handleMaterialUpdate = (key, value) => {
+		setSelectedMaterial((prev) => ({
+			...prev,
+			[key]: value,
+		}));
+	};
+
 	return (
-		<div className="space-y-6">
-			<h3 className="text-lg font-medium">Color & Material</h3>
-			<div className="grid grid-cols-3 gap-4">
-				{colorPresets.map((color) => (
-					<div
-						key={color.id}
-						onClick={() => setSelectedColor(color)}
-						className="text-center"
+		<div style={{ padding: '20px 0' }}>
+			<Title
+				level={4}
+				style={{ marginBottom: 24 }}
+			>
+				Material & Finish
+			</Title>
+
+			<Row
+				gutter={[16, 16]}
+				style={{ marginBottom: 24 }}
+			>
+				{materialPresets.map((preset) => (
+					<Col
+						span={12}
+						key={preset.id}
 					>
-						<div
-							className={`w-12 h-12 rounded-full mx-auto border-2 ${
-								selectedColor.id === color.id
-									? 'border-blue-500'
-									: 'border-gray-200'
-							}`}
-							style={{ backgroundColor: color.hex }}
-						/>
-						<span className="text-sm mt-1">{color.name}</span>
-					</div>
+						<Card
+							hoverable
+							onClick={() => setSelectedMaterial(preset)}
+							style={{
+								borderColor:
+									selectedMaterial?.id === preset.id ? '#1890ff' : undefined,
+								cursor: 'pointer',
+							}}
+							bodyStyle={{ padding: 16 }}
+						>
+							<div
+								style={{
+									width: '100%',
+									height: 80,
+									borderRadius: 8,
+									backgroundColor: preset.color,
+									opacity: preset.roughness ? 0.8 : 1,
+									marginBottom: 12,
+									border: '1px solid #f0f0f0',
+								}}
+							/>
+							<Text strong>{preset.name}</Text>
+							<div>
+								<Text
+									type="primary"
+									style={{ color: '#1890ff' }}
+								>
+									${preset.price}
+								</Text>
+							</div>
+						</Card>
+					</Col>
 				))}
-			</div>
-			<div>
-				<label className="block text-sm font-medium mb-2">Custom Color</label>
+			</Row>
+
+			<div style={{ marginBottom: 24 }}>
+				<Title level={5}>
+					<BgColorsOutlined style={{ marginRight: 8 }} />
+					Custom Color
+				</Title>
 				<ColorPicker
-					value={selectedColor.hex}
-					onChange={(color) =>
-						setSelectedColor((prev) => ({ ...prev, hex: color.toHexString() }))
-					}
-					className="w-full"
+					value={selectedMaterial.color}
+					onChange={(color) => handleMaterialUpdate('color', color)}
+					style={{ width: '100%', marginTop: 8 }}
 				/>
 			</div>
-			<div>
-				<label className="block text-sm font-medium mb-2">Metalness</label>
-				<Slider
-					value={selectedColor.metalness}
-					onChange={(value) =>
-						setSelectedColor((prev) => ({ ...prev, metalness: value }))
-					}
-					min={0}
-					max={1}
-					step={0.1}
-				/>
-			</div>
-			<div>
-				<label className="block text-sm font-medium mb-2">Roughness</label>
-				<Slider
-					value={selectedColor.roughness}
-					onChange={(value) =>
-						setSelectedColor((prev) => ({ ...prev, roughness: value }))
-					}
-					min={0}
-					max={1}
-					step={0.1}
-				/>
-			</div>
+
+			<Card style={{ marginBottom: 16 }}>
+				<div style={{ marginBottom: 16 }}>
+					<div
+						style={{
+							marginBottom: 8,
+							display: 'flex',
+							justifyContent: 'space-between',
+						}}
+					>
+						<Text strong>Metalness</Text>
+						<Text type="secondary">
+							{selectedMaterial.metalness.toFixed(2)}
+						</Text>
+					</div>
+					<Slider
+						value={selectedMaterial.metalness}
+						min={0}
+						max={1}
+						step={0.01}
+						onChange={(value) => handleMaterialUpdate('metalness', value)}
+						tooltip={{
+							formatter: (value) => value.toFixed(2),
+						}}
+					/>
+				</div>
+
+				<div>
+					<div
+						style={{
+							marginBottom: 8,
+							display: 'flex',
+							justifyContent: 'space-between',
+						}}
+					>
+						<Text strong>Roughness</Text>
+						<Text type="secondary">
+							{selectedMaterial.roughness.toFixed(2)}
+						</Text>
+					</div>
+					<Slider
+						value={selectedMaterial.roughness}
+						min={0}
+						max={1}
+						step={0.01}
+						onChange={(value) => handleMaterialUpdate('roughness', value)}
+						tooltip={{
+							formatter: (value) => value.toFixed(2),
+						}}
+					/>
+				</div>
+			</Card>
 		</div>
 	);
 }
