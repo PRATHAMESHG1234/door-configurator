@@ -6,131 +6,56 @@ export const glassStyles = [
 		name: 'No Glass',
 		price: 0,
 		description: 'Solid door without glass panels',
-		configuration: null,
+		image: null,
 	},
 	{
 		id: 'full-glass',
 		name: 'Full Glass Panel',
 		price: 500,
 		description: 'Elegant full-length glass panel',
-		configuration: {
-			dimensions: {
-				width: 0.8,
-				height: 1.6,
-			},
-			offset: {
-				x: 0,
-				y: 0,
-				z: 0.01,
-			},
-		},
+		image: '/src/assets/glass/image.png',
 	},
 	{
 		id: 'top-glass',
 		name: 'Top Glass Panel',
 		price: 300,
 		description: 'Classic top window design',
-		configuration: {
-			dimensions: {
-				width: 0.8,
-				height: 0.4,
-			},
-			offset: {
-				x: 0,
-				y: 0.7,
-				z: 0.01,
-			},
-		},
+		image: '/src/assets/glass/styles/top-glass.png',
 	},
 	{
 		id: 'double-side-glass',
 		name: 'Double Side Glass',
 		price: 450,
 		description: 'Modern dual vertical panels',
-		configuration: {
-			dimensions: {
-				width: 0.2,
-				height: 1.6,
-			},
-			offset: {
-				left: -0.3,
-				right: 0.3,
-				y: 0,
-				z: 0.01,
-			},
-		},
+		image: '/src/assets/glass/styles/double-side.png',
 	},
 	{
 		id: 'triple-glass',
 		name: 'Triple Glass Design',
 		price: 600,
 		description: 'Contemporary three-panel layout',
-		configuration: {
-			dimensions: {
-				width: 0.25,
-				height: 1.6,
-			},
-			offset: {
-				left: -0.3,
-				center: 0,
-				right: 0.3,
-				y: 0,
-				z: 0.01,
-			},
-		},
+		image: '/src/assets/glass/styles/triple-glass.png',
 	},
 	{
 		id: 'bottom-glass',
 		name: 'Bottom Glass Panel',
 		price: 300,
 		description: 'Unique bottom window design',
-		configuration: {
-			dimensions: {
-				width: 0.8,
-				height: 0.4,
-			},
-			offset: {
-				x: 0,
-				y: -0.7,
-				z: 0.01,
-			},
-		},
+		image: '/src/assets/glass/styles/bottom-glass.png',
 	},
 	{
 		id: 'diamond-glass',
 		name: 'Diamond Pattern Glass',
 		price: 700,
 		description: 'Elegant diamond-shaped window',
-		configuration: {
-			dimensions: {
-				width: 0.5,
-				height: 0.5,
-			},
-			offset: {
-				x: 0,
-				y: 0.3,
-				z: 0.01,
-			},
-			rotation: 45, // degrees
-		},
+		image: '/src/assets/glass/styles/diamond-glass.png',
 	},
 	{
 		id: 'arch-glass',
 		name: 'Arched Top Glass',
 		price: 550,
 		description: 'Classic arched window design',
-		configuration: {
-			dimensions: {
-				width: 0.6,
-				height: 0.8,
-			},
-			offset: {
-				x: 0,
-				y: 0.5,
-				z: 0.01,
-			},
-			isArched: true,
-		},
+		image: '/src/assets/glass/styles/arch-glass.png',
 	},
 ];
 
@@ -140,119 +65,70 @@ export const glassPatterns = [
 		name: 'Clear Glass',
 		price: 0,
 		description: 'Traditional clear glass finish',
-		color: '#ffffff',
+		image: '/src/assets/glass/image.png',
 		opacity: 0.3,
-		transmission: 0.95,
-		roughness: 0.1,
-		metalness: 0,
-		clearcoat: 1,
-		clearcoatRoughness: 0,
-		ior: 1.5,
-		texture: null,
 	},
 	{
 		id: 'frosted',
 		name: 'Frosted Glass',
 		price: 100,
 		description: 'Privacy-focused frosted finish',
-		color: '#f8f8f8',
+		image: '/src/assets/glass/patterns/frosted.png',
 		opacity: 0.7,
-		transmission: 0.8,
-		roughness: 0.4,
-		metalness: 0,
-		clearcoat: 0.5,
-		clearcoatRoughness: 0.5,
-		ior: 1.45,
-		texture: '/textures/frosted.jpg',
 	},
 	{
 		id: 'tinted',
 		name: 'Tinted Glass',
 		price: 150,
 		description: 'Elegant light-reducing tint',
-		color: '#a0a0a0',
+		image: '/src/assets/glass/patterns/tinted.png',
 		opacity: 0.4,
-		transmission: 0.7,
-		roughness: 0.1,
-		metalness: 0,
-		clearcoat: 1,
-		clearcoatRoughness: 0,
-		ior: 1.52,
-		texture: null,
 	},
 	{
 		id: 'rain',
 		name: 'Rain Pattern',
 		price: 200,
 		description: 'Textured rain drop effect',
-		color: '#ffffff',
+		image: '/src/assets/glass/patterns/rain.png',
 		opacity: 0.5,
-		transmission: 0.85,
-		roughness: 0.3,
-		metalness: 0,
-		clearcoat: 0.8,
-		clearcoatRoughness: 0.2,
-		ior: 1.48,
-		texture: '/textures/rain.jpg',
 	},
 	{
 		id: 'bamboo',
 		name: 'Bamboo Pattern',
 		price: 250,
 		description: 'Asian-inspired bamboo texture',
-		color: '#f0f0f0',
+		image: '/src/assets/glass/patterns/bamboo.png',
 		opacity: 0.6,
-		transmission: 0.75,
-		roughness: 0.35,
-		metalness: 0,
-		clearcoat: 0.7,
-		clearcoatRoughness: 0.3,
-		ior: 1.47,
-		texture: '/textures/bamboo.jpg',
-	},
-	{
-		id: 'ripple',
-		name: 'Ripple Effect',
-		price: 200,
-		description: 'Subtle wave pattern',
-		color: '#ffffff',
-		opacity: 0.4,
-		transmission: 0.9,
-		roughness: 0.25,
-		metalness: 0,
-		clearcoat: 0.9,
-		clearcoatRoughness: 0.1,
-		ior: 1.49,
-		texture: '/textures/ripple.jpg',
 	},
 	{
 		id: 'geometric',
 		name: 'Geometric Pattern',
 		price: 300,
 		description: 'Modern geometric design',
-		color: '#f5f5f5',
+		image: '/src/assets/glass/patterns/geometric.png',
 		opacity: 0.5,
-		transmission: 0.8,
-		roughness: 0.3,
-		metalness: 0,
-		clearcoat: 0.8,
-		clearcoatRoughness: 0.2,
-		ior: 1.46,
-		texture: '/textures/geometric.jpg',
-	},
-	{
-		id: 'mirror',
-		name: 'Mirror Finish',
-		price: 400,
-		description: 'Reflective mirror-like surface',
-		color: '#e0e0e0',
-		opacity: 0.9,
-		transmission: 0.1,
-		roughness: 0.1,
-		metalness: 0.9,
-		clearcoat: 1,
-		clearcoatRoughness: 0,
-		ior: 2.0,
-		texture: null,
 	},
 ];
+
+// Helper functions
+export const getGlassStyleById = (id) =>
+	glassStyles.find((style) => style.id === id);
+export const getGlassPatternById = (id) =>
+	glassPatterns.find((pattern) => pattern.id === id);
+
+// Function to combine glass style with pattern
+export const combineGlassImages = (styleId, patternId) => {
+	const style = getGlassStyleById(styleId);
+	const pattern = getGlassPatternById(patternId);
+
+	if (!style || !pattern || styleId === 'no-glass') {
+		return null;
+	}
+
+	return {
+		styleImage: style.image,
+		patternImage: pattern.image,
+		opacity: pattern.opacity,
+		totalPrice: style.price + pattern.price,
+	};
+};

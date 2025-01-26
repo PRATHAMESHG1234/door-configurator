@@ -5,6 +5,7 @@ import { handleStyles } from '../config/handleStyles';
 import { validateDoorConfig } from '../utils/validationUtils';
 import { calculateTotalPrice } from '../utils/priceCalculator';
 import { glassPatterns, glassStyles } from '../config/glassStyles';
+import { getDefaultDirection } from '../config/doorConstructionConfig';
 
 export const useDoorConfiguration = (initialConfig = {}) => {
 	const [config, setConfig] = useState({
@@ -13,6 +14,7 @@ export const useDoorConfiguration = (initialConfig = {}) => {
 		handle: initialConfig.handle || handleStyles[0],
 		glass: initialConfig.glass || glassStyles[0],
 		glassPattern: initialConfig.glassPattern || glassPatterns[0],
+		openingDirection: initialConfig.openingDirection || getDefaultDirection(),
 		customizations: initialConfig.customizations || {},
 		// Add all available options to the config
 		availableDesigns: doorStyles,
@@ -73,5 +75,7 @@ export const useDoorConfiguration = (initialConfig = {}) => {
 		updateGlassPattern: (pattern) => updateConfig('glassPattern', pattern),
 		updateCustomizations: (customizations) =>
 			updateConfig('customizations', customizations),
+		updateOpeningDirection: (direction) =>
+			updateConfig('openingDirection', direction),
 	};
 };

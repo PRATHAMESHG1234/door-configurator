@@ -16,9 +16,15 @@ import {
 	LinkedinOutlined,
 } from '@ant-design/icons';
 
-const NavLink = ({ to, icon, children }) => {
+const NavLink = ({ to, icon, children, onClick }) => {
 	const location = useLocation();
 	const isActive = location.pathname === to;
+
+	const handleClick = (e) => {
+		if (onClick) {
+			onClick(e);
+		}
+	};
 
 	return (
 		<Link
@@ -28,6 +34,7 @@ const NavLink = ({ to, icon, children }) => {
 					? 'text-blue-600 bg-blue-50'
 					: 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
 			}`}
+			onClick={handleClick}
 		>
 			{icon && <span className="mr-2">{icon}</span>}
 			{children}
@@ -43,6 +50,10 @@ export const Header = () => {
 		{ to: '/catalog', label: 'Catalog', icon: <AppstoreOutlined /> },
 		{ to: '/configurator', label: 'Configurator', icon: <ToolOutlined /> },
 	];
+
+	const handleNavClick = () => {
+		setMobileMenuOpen(false);
+	};
 
 	return (
 		<header className="bg-white shadow-sm sticky top-0 z-50">
@@ -84,6 +95,17 @@ export const Header = () => {
 						onClose={() => setMobileMenuOpen(false)}
 						open={mobileMenuOpen}
 						width={280}
+						afterVisibleChange={(visible) => {
+							// Reset scroll position when drawer closes
+							if (!visible) {
+								setTimeout(() => {
+									const drawerBody = document.querySelector('.ant-drawer-body');
+									if (drawerBody) {
+										drawerBody.scrollTop = 0;
+									}
+								}, 100);
+							}
+						}}
 					>
 						<div className="flex flex-col space-y-2">
 							{navItems.map((item) => (
@@ -91,7 +113,7 @@ export const Header = () => {
 									key={item.to}
 									to={item.to}
 									icon={item.icon}
-									onClick={() => setMobileMenuOpen(false)}
+									onClick={handleNavClick}
 								>
 									{item.label}
 								</NavLink>

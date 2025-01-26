@@ -3,7 +3,7 @@ import Home from './pages/Home/Home';
 import Catalog from './pages/Catalog/Catalog';
 // import QuoteRequest from './pages/QuoteRequest';
 import { Header, Footer } from './components/Header';
-import { DoorConfigurator } from './pages/configurator/DoorConfigurator';
+import DoorConfigurator from './pages/configurator/DoorConfigurator';
 
 const App = () => {
 	return (
