@@ -3,11 +3,8 @@ import { Card, Typography, Row, Col, Image } from 'antd';
 
 const { Title, Text } = Typography;
 
-export function DesignPanel({
-	selectedDesign,
-	setSelectedDesign,
-	doorDesigns,
-}) {
+export function DesignPanel({ availableDoors, selectedDoor, onSelectDoor }) {
+	console.log({ availableDoors });
 	return (
 		<div style={{ padding: '0', overflowX: 'hidden' }}>
 			<Title
@@ -18,27 +15,27 @@ export function DesignPanel({
 			</Title>
 
 			<Row gutter={[16, 16]}>
-				{doorDesigns?.map((design) => (
+				{availableDoors?.map((door) => (
 					<Col
 						span={12}
-						key={design.id}
+						key={door.id}
 					>
 						<Card
 							hoverable
 							bodyStyle={{ padding: 12 }}
-							onClick={() => setSelectedDesign(design)}
+							onClick={() => onSelectDoor(door)}
 							style={{
 								borderColor:
-									selectedDesign?.id === design.id ? '#1890ff' : undefined,
+									selectedDoor?.id === door.id ? '#1890ff' : undefined,
 								backgroundColor:
-									selectedDesign?.id === design.id ? '#e6f7ff' : undefined,
+									selectedDoor?.id === door.id ? '#e6f7ff' : undefined,
 								cursor: 'pointer',
 							}}
 							cover={
 								<div style={{ padding: 8 }}>
 									<Image
-										src={design.thumbnail}
-										alt={design.name}
+										src={door.main_image_url} // Using the main image URL from Firebase
+										alt={door.name}
 										style={{
 											width: '100%',
 											height: 'auto',
@@ -52,27 +49,25 @@ export function DesignPanel({
 							}
 						>
 							<div style={{ textAlign: 'center' }}>
-								<Text strong>{design.name}</Text>
-								{/* {design.description && (
+								<Text strong>{door.name}</Text>
+								{door.description && (
 									<Text
 										type="secondary"
 										style={{ display: 'block', marginTop: 4 }}
 									>
-										{design.description}
+										{door.description}
 									</Text>
-								)} */}
-								{design.basePrice && (
-									<div style={{ marginTop: 8 }}>
-										<Text type="secondary">Base Price: </Text>
-										<Text
-											type="primary"
-											strong
-											style={{ color: '#1890ff' }}
-										>
-											${design.basePrice}
-										</Text>
-									</div>
 								)}
+								<div style={{ marginTop: 8 }}>
+									<Text type="secondary">Available Colors: </Text>
+									<Text
+										type="primary"
+										strong
+										style={{ color: '#1890ff' }}
+									>
+										{door.available_colors?.length || 0}
+									</Text>
+								</div>
 							</div>
 						</Card>
 					</Col>

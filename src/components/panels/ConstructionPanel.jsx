@@ -1,9 +1,23 @@
 // src/components/panels/ConstructionPanel.jsx
 import { Card, Typography, Row, Col, Image } from 'antd';
 import { SwapOutlined } from '@ant-design/icons';
-import { doorOpeningDirections } from '../../config/doorConstructionConfig';
 
 const { Title, Text } = Typography;
+
+const openingDirections = [
+	{
+		id: 'left',
+		name: 'Left Opening',
+		description: 'Door opens from left to right',
+		mirror: false,
+	},
+	{
+		id: 'right',
+		name: 'Right Opening',
+		description: 'Door opens from right to left',
+		mirror: true,
+	},
+];
 
 export function ConstructionPanel({ selectedDirection, setSelectedDirection }) {
 	return (
@@ -17,7 +31,7 @@ export function ConstructionPanel({ selectedDirection, setSelectedDirection }) {
 
 			<div className="direction-selection">
 				<Row gutter={[16, 16]}>
-					{doorOpeningDirections.map((direction) => (
+					{openingDirections.map((direction) => (
 						<Col
 							xs={24}
 							sm={12}
@@ -25,9 +39,9 @@ export function ConstructionPanel({ selectedDirection, setSelectedDirection }) {
 						>
 							<Card
 								hoverable
-								onClick={() => setSelectedDirection(direction)}
+								onClick={() => setSelectedDirection(direction.id)}
 								className={`direction-card ${
-									selectedDirection?.id === direction.id ? 'selected' : ''
+									selectedDirection === direction.id ? 'selected' : ''
 								}`}
 							>
 								<div className="direction-content">
@@ -43,14 +57,13 @@ export function ConstructionPanel({ selectedDirection, setSelectedDirection }) {
 										<Text type="secondary">{direction.description}</Text>
 									</div>
 									<div className="preview-container">
-										<Image
-											src={direction.image}
-											alt={direction.name}
-											preview={false}
-											className={`preview-image ${
+										<div
+											className={`door-preview ${
 												direction.mirror ? 'mirrored' : ''
 											}`}
-										/>
+										>
+											<div className="door-handle" />
+										</div>
 									</div>
 								</div>
 							</Card>
@@ -104,18 +117,35 @@ export function ConstructionPanel({ selectedDirection, setSelectedDirection }) {
 
 				.preview-container {
 					width: 100%;
-					max-width: 200px;
+					max-width: 100px;
 					margin: 0 auto;
+					aspect-ratio: 1/2;
+					position: relative;
 				}
 
-				.preview-image {
+				.door-preview {
 					width: 100%;
-					height: auto;
+					height: 100%;
+					background-color: #f0f0f0;
+					border: 2px solid #d9d9d9;
+					border-radius: 4px;
+					position: relative;
 					transition: transform 0.3s ease;
 				}
 
-				.preview-image.mirrored {
+				.door-preview.mirrored {
 					transform: scaleX(-1);
+				}
+
+				.door-handle {
+					position: absolute;
+					right: 10%;
+					top: 50%;
+					width: 20%;
+					height: 10%;
+					background-color: #1890ff;
+					border-radius: 4px;
+					transform: translateY(-50%);
 				}
 
 				@media (max-width: 768px) {
@@ -132,7 +162,7 @@ export function ConstructionPanel({ selectedDirection, setSelectedDirection }) {
 					}
 
 					.preview-container {
-						max-width: 80px;
+						max-width: 60px;
 					}
 				}
 			`}</style>

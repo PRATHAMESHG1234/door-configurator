@@ -1,41 +1,50 @@
+// src/hooks/useDoorConfiguration.js
 import { useState, useCallback, useEffect } from 'react';
-import { doorStyles } from '../config/doorStyles';
-import { materialPresets } from '../config/materialPresets';
-import { handleStyles } from '../config/handleStyles';
-import { validateDoorConfig } from '../utils/validationUtils';
-import { calculateTotalPrice } from '../utils/priceCalculator';
-import { glassPatterns, glassStyles } from '../config/glassStyles';
-import { getDefaultDirection } from '../config/doorConstructionConfig';
+import { db } from '../services/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 export const useDoorConfiguration = (initialConfig = {}) => {
+	const [doors, setDoors] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+
 	const [config, setConfig] = useState({
-		design: initialConfig.design || doorStyles[0],
-		material: initialConfig.material || materialPresets[0],
-		handle: initialConfig.handle || handleStyles[0],
-		glass: initialConfig.glass || glassStyles[0],
-		glassPattern: initialConfig.glassPattern || glassPatterns[0],
-		openingDirection: initialConfig.openingDirection || getDefaultDirection(),
-		customizations: initialConfig.customizations || {},
-		// Add all available options to the config
-		availableDesigns: doorStyles,
-		availableMaterials: materialPresets,
-		availableHandles: handleStyles,
-		availableGlassStyles: glassStyles,
-		availableGlassPatterns: glassPatterns,
+		selectedDoor: initialConfig.selectedDoor || null,
+		selectedColor: initialConfig.selectedColor || null,
+		openingDirection: initialConfig.openingDirection || 'left',
+		glassPosition: initialConfig.glassPosition || null,
 	});
 
-	const [errors, setErrors] = useState([]);
-	const [totalPrice, setTotalPrice] = useState(0);
-
-	// Validate configuration whenever it changes
+	// Fetch doors data from Firestore
 	useEffect(() => {
-		const { isValid, errors } = validateDoorConfig(config);
-		setErrors(errors);
+		const fetchDoors = async () => {
+			try {
+				setLoading(true);
+				const doorsCollection = collection(db, 'doors');
+				const doorSnapshot = await getDocs(doorsCollection);
+				const doorsList = doorSnapshot.docs.map((doc) => ({
+					id: doc.id,
+					...doc.data(),
+				}));
 
-		// Calculate new total price
-		const price = calculateTotalPrice(config);
-		setTotalPrice(price);
-	}, [config]);
+				setDoors(doorsList);
+
+				if (!config.selectedDoor && doorsList.length > 0) {
+					setConfig((prev) => ({
+						...prev,
+						selectedDoor: doorsList[0],
+					}));
+				}
+			} catch (err) {
+				console.error('Error fetching doors:', err);
+				setError('Failed to load doors data');
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchDoors();
+	}, []);
 
 	const updateConfig = useCallback((key, value) => {
 		setConfig((prev) => ({
@@ -46,36 +55,23 @@ export const useDoorConfiguration = (initialConfig = {}) => {
 
 	const resetConfig = useCallback(() => {
 		setConfig({
-			design: doorStyles[0],
-			material: materialPresets[0],
-			handle: handleStyles[0],
-			glass: glassStyles[0],
-			glassPattern: glassPatterns[0],
-			customizations: {},
-			// Maintain the available options during reset
-			availableDesigns: doorStyles,
-			availableMaterials: materialPresets,
-			availableHandles: handleStyles,
-			availableGlassStyles: glassStyles,
-			availableGlassPatterns: glassPatterns,
+			selectedDoor: doors[0] || null,
+			selectedColor: null,
+			openingDirection: 'left',
+			glassPosition: null,
 		});
-	}, []);
+	}, [doors]);
 
 	return {
 		config,
-		errors,
-		totalPrice,
-		updateConfig,
-		resetConfig,
-		// Convenience methods for specific updates
-		updateDesign: (design) => updateConfig('design', design),
-		updateMaterial: (material) => updateConfig('material', material),
-		updateHandle: (handle) => updateConfig('handle', handle),
-		updateGlass: (glass) => updateConfig('glass', glass),
-		updateGlassPattern: (pattern) => updateConfig('glassPattern', pattern),
-		updateCustomizations: (customizations) =>
-			updateConfig('customizations', customizations),
+		doors,
+		loading,
+		error,
+		updateDoor: (door) => updateConfig('selectedDoor', door),
+		updateColor: (color) => updateConfig('selectedColor', color),
 		updateOpeningDirection: (direction) =>
 			updateConfig('openingDirection', direction),
+		updateGlassPosition: (position) => updateConfig('glassPosition', position),
+		resetConfig,
 	};
 };

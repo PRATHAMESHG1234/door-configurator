@@ -1,152 +1,46 @@
-// src/components/panels/GlassPanel.jsx
-import { Card, Tabs, Typography, Row, Col, Image, Tag } from 'antd';
-import { DollarOutlined } from '@ant-design/icons';
+import { Typography, Radio } from 'antd';
 
 const { Title, Text } = Typography;
 
-export function GlassPanel({
-	selectedGlassStyle,
-	setSelectedGlassStyle,
-	selectedPattern,
-	setSelectedPattern,
-	glassStyles,
-	glassPatterns,
-}) {
-	const items = [
-		{
-			key: 'style',
-			label: 'Style',
-			children: (
-				<Row
-					gutter={[16, 16]}
-					style={{ marginTop: 16 }}
-				>
-					{glassStyles.map((style) => (
-						<Col
-							span={12}
-							key={style.id}
-						>
-							<Card
-								hoverable
-								onClick={() => setSelectedGlassStyle(style)}
-								style={{
-									borderColor:
-										selectedGlassStyle?.id === style.id ? '#1890ff' : undefined,
-									backgroundColor:
-										selectedGlassStyle?.id === style.id ? '#e6f7ff' : undefined,
-								}}
-								bodyStyle={{ padding: 16 }}
-							>
-								<div>
-									<Text
-										strong
-										style={{ fontSize: 16 }}
-									>
-										{style.name}
-									</Text>
-
-									<Text
-										type="secondary"
-										style={{ display: 'block', margin: '8px 0', fontSize: 14 }}
-									>
-										{style.description}
-									</Text>
-
-									<Tag
-										color="blue"
-										icon={<DollarOutlined />}
-										style={{ marginTop: 8 }}
-									>
-										${style.price}
-									</Tag>
-								</div>
-							</Card>
-						</Col>
-					))}
-				</Row>
-			),
-		},
-		{
-			key: 'pattern',
-			label: 'Pattern',
-			disabled: !selectedGlassStyle?.id,
-			children: (
-				<Row
-					gutter={[16, 16]}
-					style={{ marginTop: 16 }}
-				>
-					{glassPatterns.map((pattern) => (
-						<Col
-							span={12}
-							key={pattern.id}
-						>
-							<Card
-								hoverable
-								onClick={() => setSelectedPattern(pattern)}
-								style={{
-									borderColor:
-										selectedPattern?.id === pattern.id ? '#1890ff' : undefined,
-									backgroundColor:
-										selectedPattern?.id === pattern.id ? '#e6f7ff' : undefined,
-								}}
-								bodyStyle={{ padding: 16 }}
-								cover={
-									pattern.texture && (
-										<div style={{ padding: '16px 16px 0' }}>
-											<Image
-												src={pattern.texture}
-												alt={pattern.name}
-												style={{
-													width: '100%',
-													height: 'auto',
-													borderRadius: 8,
-													aspectRatio: '1',
-												}}
-												preview={false}
-											/>
-										</div>
-									)
-								}
-							>
-								<div>
-									<Text
-										strong
-										style={{ fontSize: 16 }}
-									>
-										{pattern.name}
-									</Text>
-
-									<Tag
-										color="blue"
-										icon={<DollarOutlined />}
-										style={{ marginTop: 8, display: 'block' }}
-									>
-										${pattern.price}
-									</Tag>
-								</div>
-							</Card>
-						</Col>
-					))}
-				</Row>
-			),
-		},
+export function GlassPanel({ selectedPosition, setSelectedPosition }) {
+	const glassPositions = [
+		{ id: 'top', name: 'Top Panel' },
+		{ id: 'left', name: 'Left Panel' },
+		{ id: 'right', name: 'Right Panel' },
+		{ id: 'twoLeft', name: 'Two Panels on Left' },
+		{ id: 'twoRight', name: 'Two Panels on Right' },
 	];
 
 	return (
-		<div style={{ padding: '20px 0' }}>
+		<div className="py-5">
 			<Title
 				level={4}
-				style={{ marginBottom: 24 }}
+				className="mb-6"
 			>
-				Glass Configuration
+				Glass Position
 			</Title>
 
-			<Tabs
-				defaultActiveKey="style"
-				items={items}
-				style={{ width: '100%' }}
-				animated={{ inkBar: true, tabPane: true }}
-			/>
+			<Text
+				type="secondary"
+				className="block mb-4"
+			>
+				Select where you want to place the glass panel
+			</Text>
+
+			<Radio.Group
+				value={selectedPosition}
+				onChange={(e) => setSelectedPosition(e.target.value)}
+				className="w-full flex flex-col gap-3"
+			>
+				{glassPositions.map((position) => (
+					<Radio.Button
+						key={position.id}
+						value={position.id}
+					>
+						{position.name}
+					</Radio.Button>
+				))}
+			</Radio.Group>
 		</div>
 	);
 }

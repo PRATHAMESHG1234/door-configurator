@@ -1,10 +1,27 @@
 // src/components/panels/ColorPanel.jsx
-import { Card, Typography, Tabs, Image, Row, Col } from 'antd';
-import { colorCategories, colorPresets } from '../../config/colorStyles';
+import { Card, Typography, Image, Row, Col } from 'antd';
+import { useState, useEffect } from 'react';
 
 const { Title, Text } = Typography;
 
-export function ColorPanel({ selectedMaterial, setSelectedMaterial }) {
+export function ColorPanel({ selectedDoor, selectedColor, onColorSelect }) {
+	const [colorVariants, setColorVariants] = useState([]);
+
+	useEffect(() => {
+		if (selectedDoor?.color_variants) {
+			// Transform the color_variants object into an array
+			const variants = Object.entries(selectedDoor.color_variants).map(
+				([colorCode, urls]) => ({
+					id: colorCode,
+					name: colorCode,
+					sampleImage: urls.sample_image_url,
+					doorImage: urls.door_image_url,
+				})
+			);
+			setColorVariants(variants);
+		}
+	}, [selectedDoor]);
+
 	return (
 		<div className="color-panel">
 			<Title
@@ -14,53 +31,38 @@ export function ColorPanel({ selectedMaterial, setSelectedMaterial }) {
 				Color Selection
 			</Title>
 
-			<Tabs defaultActiveKey="L Series">
-				{Object.entries(colorCategories).map(([category, colors]) => (
-					<Tabs.TabPane
-						tab={`${category} (${colors.length})`}
-						key={category}
+			<Row gutter={[12, 12]}>
+				{colorVariants.map((color) => (
+					<Col
+						xs={12}
+						sm={8}
+						md={12}
+						lg={8}
+						key={color.id}
 					>
-						<Row gutter={[12, 12]}>
-							{colors.map((color) => (
-								<Col
-									xs={12}
-									sm={8}
-									md={12}
-									lg={8}
-									key={color.id}
-								>
-									<Card
-										hoverable
-										onClick={() => setSelectedMaterial(color)}
-										className={`color-card ${
-											selectedMaterial?.id === color.id ? 'selected' : ''
-										}`}
-										bodyStyle={{ padding: 12 }}
-									>
-										<div className="color-preview">
-											<Image
-												src={color.image}
-												alt={color.name}
-												preview={false}
-												className="color-image"
-											/>
-										</div>
-										<div className="color-info">
-											<Text strong>{color.name}</Text>
-											<Text
-												type="secondary"
-												className="price"
-											>
-												${color.price}
-											</Text>
-										</div>
-									</Card>
-								</Col>
-							))}
-						</Row>
-					</Tabs.TabPane>
+						<Card
+							hoverable
+							onClick={() => onColorSelect(color)}
+							className={`color-card ${
+								selectedColor?.id === color.id ? 'selected' : ''
+							}`}
+							bodyStyle={{ padding: 12 }}
+						>
+							<div className="color-preview">
+								<Image
+									src={color.sampleImage}
+									alt={color.name}
+									preview={false}
+									className="color-image"
+								/>
+							</div>
+							<div className="color-info">
+								<Text strong>{color.name}</Text>
+							</div>
+						</Card>
+					</Col>
 				))}
-			</Tabs>
+			</Row>
 
 			<style jsx>{`
 				.color-panel {
@@ -99,10 +101,6 @@ export function ColorPanel({ selectedMaterial, setSelectedMaterial }) {
 					display: flex;
 					flex-direction: column;
 					gap: 4px;
-				}
-
-				.price {
-					color: #1890ff;
 				}
 
 				@media (max-width: 768px) {

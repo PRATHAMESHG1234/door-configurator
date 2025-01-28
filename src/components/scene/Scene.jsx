@@ -1,80 +1,126 @@
-// src/components/scene/Scene.jsx
-import { useState } from 'react';
 import { Door } from '../door/Door';
-import { Alert } from '@/components/ui/alert';
 
 export function Scene({ doorConfig, onSelect, onDeselect }) {
-	const [isLoading, setIsLoading] = useState(false);
+	const scale = doorConfig.openingDirection === 'right' ? -1 : 1;
+
+	const getDoorImage = () => {
+		// if (doorConfig.selectedDoor && doorConfig.selectedColor) {
+		// 	return doorConfig.selectedDoor.color_variants[doorConfig.selectedColor.id]
+		// 		?.door_image_url;
+		// } else if (doorConfig.selectedDoor) {
+		// 	return doorConfig.selectedDoor.main_image_url;
+		// }
+		return '/assets/image.png';
+	};
 
 	return (
-		<div className="scene-container">
-			{/* Background Grid */}
-			<div className="background-grid" />
-
-			{/* Door Display Area */}
-			<div className="door-display">
-				<Door
-					config={doorConfig}
-					onSelect={onSelect}
-					onDeselect={onDeselect}
+		<div className="flex justify-center items-center w-full h-[90%]">
+			{/* Background Container */}
+			<div className="w-full h-full flex justify-center items-center bg-gradient-to-b from-gray-200 to-gray-400">
+				{/* Room Background Image */}
+				<div
+					className="w-full h-full fixed top-0 left-0 bg-cover bg-center blur-[1px]"
+					style={{ backgroundImage: "url('/room-background.jpg')", zIndex: -1 }}
 				/>
-			</div>
 
-			{/* Loading State */}
-			{isLoading && (
-				<div className="loading-overlay">
-					<Alert>Loading...</Alert>
+				{/* Door Unit Container */}
+				<div className="h-[98%]">
+					{/* Main Frame */}
+					<div className="w-full h-full flex flex-1 justify-center items-start">
+						{/* Content Row */}
+						<div className="flex w-full h-[60%]">
+							{/* Left Glass Panel */}
+							{['left', 'twoLeft'].includes(doorConfig.glassPosition) && (
+								<div
+									className="h-full flex"
+									style={{
+										width: doorConfig.glassPosition.startsWith('two')
+											? '30%'
+											: '20%',
+									}}
+								>
+									<SideGlassPanels
+										position="left"
+										type={doorConfig.glassPosition}
+									/>
+								</div>
+							)}
+
+							{/* Door Column */}
+							<div className="h-full">
+								<div
+									className={`w-full h-full flex items-center ${
+										['left', 'twoLeft'].includes(doorConfig.glassPosition)
+											? 'justify-start'
+											: ['right', 'twoRight'].includes(doorConfig.glassPosition)
+											? 'justify-end'
+											: 'justify-center'
+									}`}
+									onClick={() => onSelect?.()}
+									role="button"
+									tabIndex={0}
+								>
+									<img
+										src={getDoorImage()}
+										alt={`${doorConfig.selectedDoor?.name || 'Door'} Preview`}
+										className="h-full transition-transform duration-300"
+									/>
+								</div>
+							</div>
+
+							{/* Right Glass Panel */}
+							{['right', 'twoRight'].includes(doorConfig.glassPosition) && (
+								<div
+									className="h-full flex"
+									style={{
+										width: doorConfig.glassPosition.startsWith('two')
+											? '30%'
+											: '20%',
+									}}
+								>
+									<SideGlassPanels
+										position="right"
+										type={doorConfig.glassPosition}
+									/>
+								</div>
+							)}
+						</div>
+					</div>
 				</div>
-			)}
-
-			<style jsx>{`
-				.scene-container {
-					width: 100%;
-					height: 100%;
-					position: relative;
-					background-color: #f5f5f5;
-					overflow: hidden;
-				}
-
-				.background-grid {
-					position: absolute;
-					inset: 0;
-					background-image: radial-gradient(
-						circle at 1px 1px,
-						#e0e0e0 1px,
-						transparent 0
-					);
-					background-size: 20px 20px;
-					opacity: 0.5;
-				}
-
-				.door-display {
-					position: relative;
-					width: 100%;
-					height: 100%;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					z-index: 1;
-				}
-
-				.loading-overlay {
-					position: absolute;
-					inset: 0;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					background-color: rgba(255, 255, 255, 0.8);
-					z-index: 2;
-				}
-
-				@media (max-width: 768px) {
-					.scene-container {
-						height: 50vh;
-						min-height: 300px;
-					}
-				}
-			`}</style>
+			</div>
 		</div>
 	);
 }
+
+function SideGlassPanels({ position, type }) {
+	const panelCount = type.startsWith('two') ? 2 : 1;
+
+	return (
+		<div className="w-full h-full flex">
+			{Array.from({ length: panelCount }).map((_, i) => (
+				<div
+					key={i}
+					className="flex-1 border-white/20"
+					style={{
+						borderLeft: position === 'left' ? '2px solid' : 'none',
+						borderRight: position === 'right' ? '2px solid' : 'none',
+						borderBottom: i < panelCount - 1 ? '2px solid' : 'none',
+					}}
+				>
+					<div className="w-full h-full">
+						<div className="w-full h-full">
+							<img
+								src="/assets/glass/image.png"
+								alt={`Glass Panel ${i + 1}`}
+								className="w-full h-full object-fill"
+							/>
+							<div className="w-full h-full bg-gradient-to-br from-white/10 to-transparent" />
+						</div>
+					</div>
+				</div>
+			))}
+		</div>
+	);
+}
+
+export default Scene;

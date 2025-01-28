@@ -1,22 +1,30 @@
-// src/pages/Catalog.jsx
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import {
 	SearchOutlined,
 	FilterOutlined,
-	SortAscendingOutlined,
 	ArrowRightOutlined,
 	CloseOutlined,
 } from '@ant-design/icons';
-import './Catalog.css';
-import { doorStyles } from '../../config/doorStyles';
-import { categories, features, priceRanges } from '../../config/data';
+import { useDoorConfiguration } from '../../hooks/useDoorConfiguration';
+
+// Assuming you'll define these categories based on your data
+const categories = ['L Series', 'M Series', 'Z Series'];
+const priceRanges = [
+	{ id: 'budget', label: 'Budget', range: [0, 1000] },
+	{ id: 'mid', label: 'Mid-Range', range: [1001, 2000] },
+	{ id: 'premium', label: 'Premium', range: [2001, 5000] },
+];
 
 const DoorCard = ({ door }) => {
-	const [showBackImage, setShowBackImage] = useState(false);
-	const navigate = useNavigate();
+	const [hoveredColor, setHoveredColor] = useState(null);
+
+	// Get the first color variant image URL or main image as fallback
+	const mainImageUrl = door.main_image_url;
+	const firstColorVariant = door.color_variants[door.available_colors[0]];
+	const textureImageUrl = firstColorVariant?.image_url || mainImageUrl;
 
 	return (
 		<div
@@ -25,11 +33,11 @@ const DoorCard = ({ door }) => {
 		>
 			<div className="relative group">
 				<img
-					src={showBackImage ? door.texture : door.thumbnail}
+					src={hoveredColor ? textureImageUrl : mainImageUrl}
 					alt={door.name}
-					className="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105"
-					onMouseEnter={() => setShowBackImage(true)}
-					onMouseLeave={() => setShowBackImage(false)}
+					className="w-full h-96 object-cover transition-transform duration-300 group-hover:scale-105"
+					onMouseEnter={() => setHoveredColor(true)}
+					onMouseLeave={() => setHoveredColor(false)}
 				/>
 				<div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300">
 					<div className="absolute inset-0 flex items-center justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
@@ -39,28 +47,34 @@ const DoorCard = ({ door }) => {
 				<div className="flex justify-between items-start mb-4">
 					<h3 className="text-xl font-semibold">{door.name}</h3>
 					<span className="text-sm bg-[#8C285D] text-white px-3 py-1 rounded-full">
-						{door.category}
+						{door.name.charAt(0)} Series
 					</span>
 				</div>
 				<p className="text-gray-600 mb-4 line-clamp-2">{door.description}</p>
 				<div className="space-y-2">
-					{door.features.map((feature, index) => (
-						<div
-							key={index}
-							className="flex items-center text-sm text-gray-500"
-						>
-							<span className="w-1.5 h-1.5 bg-[#8C285D] rounded-full mr-2"></span>
-							{feature}
-						</div>
-					))}
+					<div className="flex flex-wrap gap-2">
+						{door.available_colors.slice(0, 5).map((colorCode) => (
+							<span
+								key={colorCode}
+								className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded"
+							>
+								{colorCode}
+							</span>
+						))}
+						{door.available_colors.length > 5 && (
+							<span className="text-sm text-gray-500">
+								+{door.available_colors.length - 5} more
+							</span>
+						)}
+					</div>
 				</div>
 				<div className="mt-4 pt-4 border-t flex justify-between items-center">
-					<span className="text-[#8C285D] font-semibold">
-						€{door.basePrice.toLocaleString()}
-					</span>
-					<button className="text-[#8C285D] hover:text-[#A0436B] transition-colors">
-						Learn More <ArrowRightOutlined className="ml-1" />
-					</button>
+					<Link
+						to={`/configurator/${door.id}`}
+						className="text-[#8C285D] hover:text-[#A0436B] transition-colors"
+					>
+						Configure <ArrowRightOutlined className="ml-1" />
+					</Link>
 				</div>
 			</div>
 		</div>
@@ -89,9 +103,9 @@ const FilterSection = ({
 		</div>
 
 		<div className="space-y-8">
-			{/* Categories */}
+			{/* Series Filter */}
 			<div>
-				<h4 className="font-medium mb-3">Door Type</h4>
+				<h4 className="font-medium mb-3">Door Series</h4>
 				<div className="space-y-2">
 					{categories.map((category) => (
 						<label
@@ -103,62 +117,11 @@ const FilterSection = ({
 								checked={selectedFilters.categories.includes(category)}
 								onChange={() => onFilterChange('categories', category)}
 								className="w-4 h-4 rounded border-2 border-gray-300 
-                checked:bg-[#8C285D] checked:border-[#8C285D] 
-                focus:ring-2 focus:ring-[#8C285D] focus:ring-opacity-50 
-                transition-colors duration-200"
+                  checked:bg-[#8C285D] checked:border-[#8C285D] 
+                  focus:ring-2 focus:ring-[#8C285D] focus:ring-opacity-50 
+                  transition-colors duration-200"
 							/>
 							<span className="ml-2 text-gray-700">{category}</span>
-						</label>
-					))}
-				</div>
-			</div>
-
-			{/* Features */}
-			<div>
-				<h4 className="font-medium mb-3">Features</h4>
-				<div className="space-y-2">
-					{features.map((feature) => (
-						<label
-							key={feature}
-							className="flex items-center cursor-pointer"
-						>
-							<input
-								type="checkbox"
-								checked={selectedFilters.features.includes(feature)}
-								onChange={() => onFilterChange('features', feature)}
-								className="w-4 h-4 rounded border-2 border-gray-300 
-                checked:bg-[#8C285D] checked:border-[#8C285D] 
-                focus:ring-2 focus:ring-[#8C285D] focus:ring-opacity-50 
-                transition-colors duration-200"
-							/>
-							<span className="ml-2">{feature}</span>
-						</label>
-					))}
-				</div>
-			</div>
-
-			{/* Price Ranges */}
-			<div>
-				<h4 className="font-medium mb-3">Price Range</h4>
-				<div className="space-y-2">
-					{priceRanges.map(({ id, label, range }) => (
-						<label
-							key={id}
-							className="flex items-center cursor-pointer"
-						>
-							<input
-								type="checkbox"
-								checked={selectedFilters.priceRanges.includes(id)}
-								onChange={() => onFilterChange('priceRanges', id)}
-								className="w-4 h-4 rounded border-2 border-gray-300 
-                checked:bg-[#8C285D] checked:border-[#8C285D] 
-                focus:ring-2 focus:ring-[#8C285D] focus:ring-opacity-50 
-                transition-colors duration-200"
-							/>
-							<span className="ml-2">
-								{label} (€{range[0].toLocaleString()} - €
-								{range[1].toLocaleString()})
-							</span>
 						</label>
 					))}
 				</div>
@@ -168,11 +131,10 @@ const FilterSection = ({
 );
 
 const Catalog = () => {
+	const { doors, loading, error } = useDoorConfiguration();
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedFilters, setSelectedFilters] = useState({
 		categories: [],
-		features: [],
-		priceRanges: [],
 	});
 	const [sortOrder, setSortOrder] = useState('featured');
 	const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -197,13 +159,13 @@ const Catalog = () => {
 	const clearFilters = () => {
 		setSelectedFilters({
 			categories: [],
-			features: [],
-			priceRanges: [],
 		});
 	};
 
 	const getFilteredDoors = () => {
-		return doorStyles.filter((door) => {
+		if (loading || error) return [];
+
+		return doors.filter((door) => {
 			// Search term filter
 			if (
 				searchTerm &&
@@ -213,30 +175,11 @@ const Catalog = () => {
 			}
 
 			// Category filter
-			if (
-				selectedFilters.categories.length > 0 &&
-				!selectedFilters.categories.includes(door.category)
-			) {
-				return false;
-			}
-
-			// Features filter
-			if (
-				selectedFilters.features.length > 0 &&
-				!selectedFilters.features.some((feature) =>
-					door.features.includes(feature)
-				)
-			) {
-				return false;
-			}
-
-			// Price range filter
-			if (selectedFilters.priceRanges.length > 0) {
-				const matchesPrice = selectedFilters.priceRanges.some((rangeId) => {
-					const range = priceRanges.find((r) => r.id === rangeId)?.range;
-					return range && door.price >= range[0] && door.price <= range[1];
-				});
-				if (!matchesPrice) return false;
+			if (selectedFilters.categories.length > 0) {
+				const doorSeries = `${door.name.charAt(0)} Series`;
+				if (!selectedFilters.categories.includes(doorSeries)) {
+					return false;
+				}
 			}
 
 			return true;
@@ -244,6 +187,33 @@ const Catalog = () => {
 	};
 
 	const filteredDoors = getFilteredDoors();
+
+	if (loading) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8C285D] mx-auto mb-4"></div>
+					<p className="text-gray-600">Loading doors...</p>
+				</div>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="text-center text-red-600">
+					<p>{error}</p>
+					<button
+						onClick={() => window.location.reload()}
+						className="mt-4 bg-[#8C285D] text-white px-4 py-2 rounded"
+					>
+						Retry
+					</button>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="min-h-screen bg-gray-50">
@@ -286,9 +256,8 @@ const Catalog = () => {
 								className="border border-gray-200 rounded-lg px-4 py-2 outline-none focus:border-[#8C285D]"
 							>
 								<option value="featured">Featured</option>
-								<option value="price-asc">Price: Low to High</option>
-								<option value="price-desc">Price: High to Low</option>
-								<option value="name">Name</option>
+								<option value="name-asc">Name: A to Z</option>
+								<option value="name-desc">Name: Z to A</option>
 							</select>
 							<button
 								onClick={() => setShowMobileFilters(true)}
@@ -363,7 +332,7 @@ const Catalog = () => {
 						className="text-3xl font-semibold mb-6"
 						data-aos="fade-up"
 					>
-						Can&apos;t find what you&apos;re looking for?
+						Can't find what you're looking for?
 					</h2>
 					<p
 						className="text-gray-600 mb-8 max-w-2xl mx-auto"
@@ -372,12 +341,13 @@ const Catalog = () => {
 						Let us help you create the perfect door for your needs. Our team is
 						ready to assist you with custom configurations.
 					</p>
-					<button
-						className="bg-[#8C285D] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300"
+					<Link
+						to="/contact"
+						className="inline-block bg-[#8C285D] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all duration-300"
 						data-aos="fade-up"
 					>
 						Contact Our Team
-					</button>
+					</Link>
 				</div>
 			</section>
 		</div>

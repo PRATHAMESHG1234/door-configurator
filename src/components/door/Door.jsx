@@ -1,137 +1,39 @@
-import { useRef } from 'react';
-
-export const Door = ({ config, selected, onSelect, onDeselect }) => {
-	const doorRef = useRef();
-	const scale = config.openingDirection?.mirror ? -1 : 1;
+export const Door = ({ config, selected, onSelect }) => {
+	const scale = config.openingDirection === 'right' ? -1 : 1;
 
 	// Get the appropriate door image based on configuration
 	const getDoorImage = () => {
-		return config.design?.texture || '/src/assets/doors/default-door.jpg';
-	};
-	console.log(config);
-	// Get glass image if glass is selected
-	const getGlassImage = () => {
-		if (config.glass && config.glass.id !== 'no-glass' && config.glassPattern) {
-			return config.glassPattern.image;
+		if (config.selectedDoor && config.selectedColor) {
+			return config.selectedDoor.color_variants[config.selectedColor.id]
+				?.door_image_url;
+		} else if (config.selectedDoor) {
+			return config.selectedDoor.main_image_url;
 		}
-		return null;
+		return '/src/assets/doors/default-door.jpg'; // Fallback image
 	};
-
-	const glassImage = getGlassImage();
 
 	return (
 		<div
-			ref={doorRef}
-			className={`door-container ${selected ? 'selected' : ''}`}
+			className={`relative w-full h-full flex items-center justify-center transition-all duration-300 ease-in-out ${
+				selected ? 'outline outline-2 outline-blue-500 bg-blue-50/50' : ''
+			}`}
+			style={{
+				width: '100%', // Fix the width
+				height: '100%', // Fix the height
+				position: 'relative',
+				overflow: 'hidden', // Ensure the image does not exceed the container
+			}}
 			onClick={() => onSelect && onSelect()}
 		>
-			<div className="door-image-container">
-				{/* Base Door Image */}
-				<img
-					src={getDoorImage()}
-					alt="Door Preview"
-					className="door-image"
-					style={{
-						transform: `scaleX(${scale})`,
-					}}
-				/>
-
-				{/* Glass Overlay */}
-				{glassImage && (
-					<div
-						className="glass-overlay"
-						style={{ transform: `scaleX(${scale})` }}
-					>
-						<img
-							src={glassImage}
-							alt="Glass Pattern"
-							className="glass-image"
-						/>
-					</div>
-				)}
-			</div>
-
-			<style jsx>{`
-				.door-container {
-					width: 100%;
-					height: 100%;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					position: relative;
-					cursor: pointer;
-					padding: 20px;
-					transition: all 0.3s ease;
-				}
-
-				.door-container.selected {
-					outline: 2px solid #1890ff;
-					background-color: rgba(24, 144, 255, 0.05);
-				}
-
-				.door-image-container {
-					width: 100%;
-					max-width: 400px;
-					aspect-ratio: 1/2;
-					position: relative;
-					overflow: hidden;
-					border-radius: 8px;
-					box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-				}
-
-				.door-image {
-					width: 100%;
-					height: 100%;
-					object-fit: cover;
-					transition: transform 0.3s ease;
-					position: absolute;
-					top: 0;
-					left: 0;
-				}
-
-				.glass-overlay {
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					pointer-events: none;
-					transition: transform 0.3s ease;
-				}
-
-				.glass-image {
-					width: 100%;
-					height: 100%;
-					object-fit: contain;
-					opacity: 0.8;
-					mix-blend-mode: overlay;
-				}
-
-				@media (max-width: 768px) {
-					.door-container {
-						padding: 10px;
-					}
-
-					.door-image-container {
-						max-width: 300px;
-					}
-				}
-
-				@media (min-width: 769px) and (max-width: 1024px) {
-					.door-image-container {
-						max-width: 350px;
-					}
-				}
-
-				@media (min-width: 1025px) {
-					.door-container {
-						padding: 30px;
-					}
-				}
-			`}</style>
+			{/* Door Image */}
+			<img
+				src={getDoorImage() || '/placeholder.svg'}
+				alt={`${config.selectedDoor?.name || 'Door'} Preview`}
+				className="absolute bottom-0 left-0 w-full h-full object-contain"
+				style={{
+					transform: `scaleX(${scale})`,
+				}}
+			/>
 		</div>
 	);
 };
