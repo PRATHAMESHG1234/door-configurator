@@ -3,18 +3,73 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-	overflow-x: hidden;
-}
-.ant-menu-inline-collapsed .ant-menu-item {
-	padding: 0 24px !important;
-}
-
-.ant-menu-inline-collapsed .ant-menu-item .anticon {
+/* Removed @charset "UTF-8"; */
+* {
 	margin: 0;
-	font-size: 18px;
+	padding: 0;
+	font-family: Roboto, sans-serif;
 }
 
-.ant-layout-sider {
-	box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+body,
+html {
+	width: 100%;
+
+	color: #696969;
+	background-color: #fff;
+}
+
+html {
+	box-sizing: border-box;
+}
+
+body {
+	-ms-touch-action: none;
+	touch-action: none;
+	font-size: 16px;
+}
+
+#konfigurator {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+#main-view {
+	top: 75px;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	position: absolute;
+}
+
+#application-bar {
+	height: 75px;
+}
+
+*,
+:after,
+:before {
+	box-sizing: inherit;
+}
+
+a {
+	color: #696969;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+input,
+select {
+	font-family: Roboto, sans-serif;
+	font-size: 20px;
+	color: #696969;
+}
+
+select:-moz-focusring {
+	color: transparent;
+	text-shadow: 0 0 0 #000;
+}
+
+select::-ms-expand {
+	display: none;
 }

@@ -264,7 +264,6 @@ export function DoorConfigurator() {
 					))}
 				</div>
 
-				{/* Column 2: Configuration Panel */}
 				<Col
 					className="bg-white border-r border-gray-200 h-full overflow-hidden"
 					style={{ width: isMobile ? '100%' : 320 }}
@@ -291,8 +290,6 @@ export function DoorConfigurator() {
 						onDeselect={() => setSelectedDoorId(null)}
 					/>
 				</Col>
-
-				{/* Mobile Bottom Navigation */}
 				{isMobile && (
 					<div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
 						<Row className="py-2">
@@ -319,7 +316,6 @@ export function DoorConfigurator() {
 					</div>
 				)}
 
-				{/* Mobile Configuration Drawer */}
 				<Drawer
 					title={
 						<div className="flex items-center">
@@ -359,7 +355,6 @@ export function DoorConfigurator() {
 					</div>
 				</Drawer>
 
-				{/* Mobile Fixed Price Bar */}
 				{isMobile && (
 					<div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 z-40">
 						<PriceBar />
