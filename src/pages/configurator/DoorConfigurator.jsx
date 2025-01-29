@@ -9,6 +9,7 @@ import {
 	BgColorsOutlined,
 	SwapOutlined,
 	BorderOuterOutlined,
+	ArrowLeftOutlined,
 } from '@ant-design/icons';
 import { useDoorConfiguration } from '../../hooks/useDoorConfiguration';
 import { GlassPanel } from '../../components/panels/GlassPanel';
@@ -18,6 +19,7 @@ import { Scene } from '../../components/scene/Scene';
 import { PDFPreviewModal } from '../../components/PDFPreviewModal';
 import { ConstructionPanel } from '../../components/panels/ConstructionPanel';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowBigLeft, ArrowBigLeftDash } from 'lucide-react';
 
 const menuItems = [
 	{
@@ -239,36 +241,54 @@ export function DoorConfigurator() {
 			<Row className="h-full overflow-hidden">
 				{/* Column 1: Menu Sider - Desktop */}
 				<div
-					className="h-full bg-white flex flex-col justify-start items-center shadow-md"
+					className="h-full flex flex-col"
 					style={{ width: 80 }}
 				>
-					{menuItems.map((item) => (
-						<div
-							key={item.key}
-							className={`flex flex-col items-center justify-center w-full py-4 cursor-pointer ${
-								activeSidebar === item.key
-									? 'bg-[#A0436B] text-white'
-									: 'text-gray-700'
-							}`}
-							onClick={() => setActiveSidebar(item.key)}
-						>
-							{item.label.props.children[0]}
-							<span
-								className={`text-xs font-medium mt-2 ${
-									activeSidebar === item.key ? 'text-white' : 'text-gray-700'
+					{/* Top Header Row */}
+					<div className="h-14 bg-white border-b border-gray-200 flex items-center justify-center">
+						<ArrowLeftOutlined
+							size={24}
+							color="black"
+						/>
+					</div>
+
+					{/* Menu Items */}
+					<div className="flex-1 bg-white flex flex-col justify-start items-center shadow-md">
+						{menuItems.map((item) => (
+							<div
+								key={item.key}
+								className={`flex flex-col items-center justify-center w-full py-4 cursor-pointer ${
+									activeSidebar === item.key
+										? 'bg-[#A0436B] text-white'
+										: 'text-gray-700'
 								}`}
+								onClick={() => setActiveSidebar(item.key)}
 							>
-								{item.label.props.children[1].props.children}
-							</span>
-						</div>
-					))}
+								{item.label.props.children[0]}
+								<span
+									className={`text-xs font-medium mt-2 ${
+										activeSidebar === item.key ? 'text-white' : 'text-gray-700'
+									}`}
+								>
+									{item.label.props.children[1].props.children}
+								</span>
+							</div>
+						))}
+					</div>
 				</div>
 
+				{/* Column 2: Config Panel */}
 				<Col
-					className="bg-white border-r border-gray-200 h-full overflow-hidden"
+					className="bg-white border-r border-gray-200 h-full overflow-hidden flex flex-col"
 					style={{ width: isMobile ? '100%' : 320 }}
 				>
-					<div className="h-full flex flex-col">
+					{/* Top Header Row */}
+					<div className="h-14 bg-white border-b border-gray-200 flex items-center px-4">
+						<h1 className="text-lg text-black font-medium">{selectedDoorId}</h1>
+					</div>
+
+					{/* Config Content */}
+					<div className="flex-1 overflow-hidden flex flex-col">
 						<div className="flex-1 overflow-y-auto">
 							<div className="p-5">{panels[activeSidebar]}</div>
 						</div>
@@ -290,6 +310,7 @@ export function DoorConfigurator() {
 						onDeselect={() => setSelectedDoorId(null)}
 					/>
 				</Col>
+
 				{isMobile && (
 					<div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
 						<Row className="py-2">

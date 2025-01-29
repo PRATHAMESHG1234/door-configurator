@@ -32,7 +32,7 @@ const NavLink = ({ to, icon, children, onClick }) => {
 			className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 ${
 				isActive
 					? 'text-blue-600 bg-blue-50'
-					: 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+					: 'text-white hover:text-blue-600 hover:bg-gray-50'
 			}`}
 			onClick={handleClick}
 		>
@@ -64,8 +64,8 @@ export const Header = () => {
 						to="/"
 						className="flex items-center space-x-2"
 					>
-						<SettingOutlined className="text-2xl text-blue-600" />
-						<span className="text-xl font-bold text-gray-900">DoorConfig</span>
+						<SettingOutlined className="text-2xl text-white" />
+						<span className="text-xl font-bold text-white">DoorConfig</span>
 					</Link>
 
 					{/* Desktop Navigation */}
