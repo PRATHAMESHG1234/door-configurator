@@ -299,7 +299,7 @@ export function DoorConfigurator() {
 				{/* Column 3: Scene */}
 				<Col
 					flex="1"
-					className={`bg-gray-100 ${
+					className={`bg-gray-100 relative ${
 						isMobile ? 'fixed bottom-16 left-0 right-0' : 'h-full'
 					} overflow-hidden`}
 					style={{ height: isMobile ? '40vh' : 'auto' }}

@@ -4,7 +4,7 @@ const { Title, Text } = Typography;
 
 export function GlassPanel({ selectedPosition, setSelectedPosition }) {
 	const glassPositions = [
-		{ id: 'top', name: 'Top Panel' },
+		{ id: 'No', name: 'No Panel' },
 		{ id: 'left', name: 'Left Panel' },
 		{ id: 'right', name: 'Right Panel' },
 		{ id: 'twoLeft', name: 'Two Panels on Left' },
