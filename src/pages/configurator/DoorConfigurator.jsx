@@ -20,6 +20,12 @@ import { PDFPreviewModal } from '../../components/PDFPreviewModal';
 import { ConstructionPanel } from '../../components/panels/ConstructionPanel';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowBigLeft, ArrowBigLeftDash } from 'lucide-react';
+import { DimensionsPanel } from '../../components/panels/DimenssionPanel';
+
+import { ColumnHeightOutlined } from '@ant-design/icons';
+import InquiryPanel from '../../components/panels/InquiryPanel';
+
+import { PrinterOutlined } from '@ant-design/icons';
 
 const menuItems = [
 	{
@@ -58,6 +64,24 @@ const menuItems = [
 			</div>
 		),
 	},
+	{
+		key: 'dimensions',
+		label: (
+			<div className="flex flex-col items-center text-xs text-gray-700">
+				<ColumnHeightOutlined className="text-2xl mb-2" />
+				<span className="font-medium">Dimensions</span>
+			</div>
+		),
+	},
+	{
+		key: 'inquiry',
+		label: (
+			<div className="flex flex-col items-center text-xs text-gray-700">
+				<PrinterOutlined className="text-2xl mb-2" />
+				<span className="font-medium">Summary</span>
+			</div>
+		),
+	},
 ];
 
 const { Content } = Layout;
@@ -78,6 +102,7 @@ export function DoorConfigurator() {
 		resetConfig,
 		updateGlassPosition,
 		doors,
+		updateDimensions,
 	} = useDoorConfiguration();
 
 	const [activeSidebar, setActiveSidebar] = useState('design');
@@ -168,6 +193,13 @@ export function DoorConfigurator() {
 				setSelectedDirection={updateOpeningDirection}
 			/>
 		),
+		dimensions: (
+			<DimensionsPanel
+				dimensions={config.dimensions}
+				onDimensionsChange={updateDimensions}
+			/>
+		),
+		inquiry: <InquiryPanel config={config} />,
 	};
 
 	const PriceBar = () => (

@@ -1,4 +1,3 @@
-// src/hooks/useDoorConfiguration.js
 import { useState, useCallback, useEffect } from 'react';
 import { db } from '../services/firebase';
 import { collection, getDocs } from 'firebase/firestore';
@@ -13,6 +12,10 @@ export const useDoorConfiguration = (initialConfig = {}) => {
 		selectedColor: initialConfig.selectedColor || null,
 		openingDirection: initialConfig.openingDirection || 'left',
 		glassPosition: initialConfig.glassPosition || null,
+		dimensions: initialConfig.dimensions || {
+			width: 359, // Default width
+			height: 687, // Default height
+		},
 	});
 
 	// Fetch doors data from Firestore
@@ -53,12 +56,26 @@ export const useDoorConfiguration = (initialConfig = {}) => {
 		}));
 	}, []);
 
+	const updateDimensions = useCallback((dimensions) => {
+		setConfig((prev) => ({
+			...prev,
+			dimensions: {
+				...prev.dimensions,
+				...dimensions,
+			},
+		}));
+	}, []);
+
 	const resetConfig = useCallback(() => {
 		setConfig({
 			selectedDoor: doors[0] || null,
 			selectedColor: null,
 			openingDirection: 'left',
 			glassPosition: null,
+			dimensions: {
+				width: 359,
+				height: 687,
+			},
 		});
 	}, [doors]);
 
@@ -72,6 +89,7 @@ export const useDoorConfiguration = (initialConfig = {}) => {
 		updateOpeningDirection: (direction) =>
 			updateConfig('openingDirection', direction),
 		updateGlassPosition: (position) => updateConfig('glassPosition', position),
+		updateDimensions,
 		resetConfig,
 	};
 };

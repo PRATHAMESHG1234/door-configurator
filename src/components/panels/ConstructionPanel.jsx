@@ -54,7 +54,6 @@ export function ConstructionPanel({ selectedDirection, setSelectedDirection }) {
 									</div>
 									<div className="direction-info">
 										<Text strong>{direction.name}</Text>
-										<Text type="secondary">{direction.description}</Text>
 									</div>
 									<div className="preview-container">
 										<div

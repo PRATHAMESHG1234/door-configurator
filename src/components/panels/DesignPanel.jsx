@@ -4,7 +4,6 @@ import { Card, Typography, Row, Col, Image } from 'antd';
 const { Title, Text } = Typography;
 
 export function DesignPanel({ availableDoors, selectedDoor, onSelectDoor }) {
-	console.log({ availableDoors });
 	return (
 		<div style={{ padding: '0', overflowX: 'hidden' }}>
 			<Title

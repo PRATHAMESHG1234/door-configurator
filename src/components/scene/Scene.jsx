@@ -1,5 +1,8 @@
 export function Scene({ doorConfig, onSelect, onDeselect }) {
-	console.log({ doorConfig });
+	// Default dimensions
+	const BASE_WIDTH = 359;
+	const BASE_HEIGHT = 687;
+
 	const getDoorImage = () => {
 		if (doorConfig.selectedDoor && doorConfig.selectedColor) {
 			return doorConfig.selectedDoor.color_variants[doorConfig.selectedColor.id]
@@ -10,27 +13,50 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 		return '/assets/image.png';
 	};
 
-	// Calculate the total width based on glass position
-	const calculateWidth = () => {
-		const baseWidth = 359; // Base door width
-		const singleGlassWidth = baseWidth * 0.3;
-		const doubleGlassWidth = baseWidth * 0.6;
+	// Get dimensions from config or use defaults
+	const getDoorDimensions = () => {
+		const width = doorConfig.dimensions.width || BASE_WIDTH;
+		const height = doorConfig.dimensions.height || BASE_HEIGHT;
 
-		if (!doorConfig.glassPosition) return baseWidth;
+		// Calculate scaling factors
+		const widthScale = width / BASE_WIDTH;
+		const heightScale = height / BASE_HEIGHT;
+
+		return {
+			width,
+			height,
+			widthScale,
+			heightScale,
+		};
+	};
+
+	// Calculate the total width based on glass position and door width
+	const calculateWidth = () => {
+		const { width: doorWidth } = getDoorDimensions();
+		const singleGlassWidth = doorWidth * 0.3;
+		const doubleGlassWidth = doorWidth * 0.6;
+
+		if (!doorConfig.glassPosition) return doorWidth;
 
 		switch (doorConfig.glassPosition) {
 			case 'left':
 			case 'right':
-				return baseWidth + singleGlassWidth;
+				return doorWidth + singleGlassWidth;
 			case 'twoLeft':
 			case 'twoRight':
-				return baseWidth + doubleGlassWidth;
+				return doorWidth + doubleGlassWidth;
 			default:
-				return baseWidth;
+				return doorWidth;
 		}
 	};
 
 	const totalWidth = calculateWidth();
+	const {
+		width: doorWidth,
+		height: doorHeight,
+		widthScale,
+		heightScale,
+	} = getDoorDimensions();
 
 	return (
 		<div className="table w-full h-full absolute whitespace-nowrap border-collapse top-0">
@@ -52,7 +78,7 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 						tableLayout: 'auto',
 						width: `${totalWidth}px`,
 						backgroundImage: "url('/assets/backgrounds/out2.png')",
-						backgroundSize: '378px',
+						backgroundSize: `${378 * widthScale}px`,
 						backgroundPosition: '50% 100%',
 						transform: 'translate3d(-1px, 0, 0)',
 					}}
@@ -87,7 +113,7 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 					className="table-cell relative whitespace-nowrap"
 					style={{
 						tableLayout: 'auto',
-						height: '687px',
+						height: `${doorHeight}px`,
 						width: `${totalWidth}px`,
 						transform: 'translate3d(-1px, -1px, 0)',
 					}}
@@ -106,6 +132,7 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 								<SideGlassPanels
 									position="left"
 									type={doorConfig.glassPosition}
+									height={doorHeight}
 								/>
 							</div>
 						)}
@@ -117,8 +144,8 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 							role="button"
 							tabIndex={0}
 							style={{
-								width: '359px',
-								height: '687px',
+								width: `${doorWidth}px`,
+								height: `${doorHeight}px`,
 							}}
 						>
 							<img
@@ -147,6 +174,7 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 								<SideGlassPanels
 									position="right"
 									type={doorConfig.glassPosition}
+									height={doorHeight}
 								/>
 							</div>
 						)}
@@ -183,7 +211,7 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 						tableLayout: 'auto',
 						width: `${totalWidth}px`,
 						backgroundImage: "url('/assets/backgrounds/out8.png')",
-						backgroundSize: '378px',
+						backgroundSize: `${378 * widthScale}px`,
 						backgroundPosition: '0% 0px',
 						transform: 'translate3d(-1px, -3px, 0)',
 					}}
@@ -203,7 +231,7 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 	);
 }
 
-function SideGlassPanels({ position, type }) {
+function SideGlassPanels({ position, type, height }) {
 	const panelCount = type.startsWith('two') ? 2 : 1;
 
 	return (
@@ -213,6 +241,7 @@ function SideGlassPanels({ position, type }) {
 					key={i}
 					className="flex-1 relative"
 					style={{
+						height: `${height}px`,
 						borderLeft:
 							position === 'left' ? '2px solid rgba(255,255,255,0.2)' : 'none',
 						borderRight:
