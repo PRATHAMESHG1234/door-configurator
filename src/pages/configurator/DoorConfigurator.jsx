@@ -103,6 +103,7 @@ export function DoorConfigurator() {
 		updateGlassPosition,
 		doors,
 		updateDimensions,
+		updateGlassDimensions,
 	} = useDoorConfiguration();
 
 	const [activeSidebar, setActiveSidebar] = useState('design');
@@ -181,10 +182,10 @@ export function DoorConfigurator() {
 		),
 		glass: (
 			<GlassPanel
-				selectedDoor={config.selectedDoor}
-				selectedColor={config.selectedColor}
 				selectedPosition={config.glassPosition}
 				setSelectedPosition={updateGlassPosition}
+				glassDimensions={config.glassDimensions} // Make sure this is passed
+				updateGlassDimensions={updateGlassDimensions} // Make sure this is passed
 			/>
 		),
 		construction: (
@@ -210,26 +211,23 @@ export function DoorConfigurator() {
 					${totalPrice?.toFixed(2)}
 				</Text>
 			</div>
-			<Row gutter={8}>
-				<Col span={6}>
+			<Row
+				gutter={8}
+				className="justify-between"
+			>
+				<Col
+					span={6}
+					className="px-6"
+				>
 					<Button
 						icon={<ReloadOutlined />}
 						onClick={handleReset}
-						className="w-full"
+						className="w-full "
 					>
 						Reset
 					</Button>
 				</Col>
-				<Col span={6}>
-					<Button
-						icon={<EyeOutlined />}
-						onClick={() => setIsPDFModalOpen(true)}
-						className="w-full"
-						disabled={!config.selectedDoor || !config.selectedColor}
-					>
-						Preview
-					</Button>
-				</Col>
+
 				<Col span={12}>
 					<Button
 						type="primary"
@@ -321,8 +319,8 @@ export function DoorConfigurator() {
 
 					{/* Config Content */}
 					<div className="flex-1 overflow-hidden flex flex-col">
-						<div className="flex-1 overflow-y-auto">
-							<div className="p-5">{panels[activeSidebar]}</div>
+						<div className="flex-1 h-full overflow-y-auto">
+							{panels[activeSidebar]}
 						</div>
 						{!isMobile && <PriceBar />}
 					</div>

@@ -13,8 +13,6 @@ import {
 	DashboardOutlined,
 	ArrowUpOutlined,
 } from '@ant-design/icons';
-import KonfiguratorPreview from '../../assets/images/konfigurator-preview.png';
-import ProKonfigurator from '../../assets/images/pro-konfigurator.png';
 
 const FeaturePoint = ({ text, subtext }) => (
 	<div
@@ -114,7 +112,7 @@ const Home = () => {
 								data-aos="fade-left"
 							>
 								<img
-									src={KonfiguratorPreview}
+									src={'/assets/images/konfigurator-preview.png'}
 									alt="Konfigurator Preview"
 									className="hero-image rounded-lg shadow-2xl"
 								/>
@@ -219,7 +217,7 @@ const Home = () => {
 								data-aos="fade-left"
 							>
 								<img
-									src={ProKonfigurator}
+									src={'/assets/images/pro-konfigurator.png'}
 									alt="Pro Konfigurator"
 									className="rounded-lg shadow-2xl"
 								/>
