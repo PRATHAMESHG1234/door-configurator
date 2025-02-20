@@ -30,80 +30,6 @@ export function GlassPanel({
 		return `/assets/glass/previews/${id}.png`;
 	};
 
-	const getActivePanels = () => {
-		if (!selectedPosition || selectedPosition === 'none') return [];
-
-		const panels = [];
-		if (selectedPosition.includes('top')) panels.push('top');
-		if (selectedPosition.includes('2left')) {
-			panels.push('2left-top', '2left-bottom');
-		} else if (selectedPosition.includes('left')) {
-			panels.push('left');
-		}
-		if (selectedPosition.includes('2right')) {
-			panels.push('2right-top', '2right-bottom');
-		} else if (selectedPosition.includes('right')) {
-			panels.push('right');
-		}
-		return panels;
-	};
-
-	const handleDimensionChange = (panel, dimension, value) => {
-		const newValue = typeof value === 'number' ? `${value}%` : value;
-		updateGlassDimensions(panel, { [dimension]: newValue });
-	};
-
-	const renderDimensionControls = (panel) => {
-		const dimensions = glassDimensions[panel] || {};
-		const parseValue = (value) => parseInt(value) || 0;
-
-		return (
-			<div className="p-4 space-y-4">
-				<div>
-					<Text className="block mb-2">Width (%)</Text>
-					<Space>
-						<Slider
-							min={0}
-							max={100}
-							value={parseValue(dimensions.width)}
-							onChange={(value) => handleDimensionChange(panel, 'width', value)}
-							className="w-48"
-						/>
-						<InputNumber
-							min={0}
-							max={100}
-							value={parseValue(dimensions.width)}
-							onChange={(value) => handleDimensionChange(panel, 'width', value)}
-						/>
-					</Space>
-				</div>
-
-				<div>
-					<Text className="block mb-2">Height (%)</Text>
-					<Space>
-						<Slider
-							min={0}
-							max={100}
-							value={parseValue(dimensions.height)}
-							onChange={(value) =>
-								handleDimensionChange(panel, 'height', value)
-							}
-							className="w-48"
-						/>
-						<InputNumber
-							min={0}
-							max={100}
-							value={parseValue(dimensions.height)}
-							onChange={(value) =>
-								handleDimensionChange(panel, 'height', value)
-							}
-						/>
-					</Space>
-				</div>
-			</div>
-		);
-	};
-
 	return (
 		<div className="py-5">
 			<Title
@@ -118,29 +44,6 @@ export function GlassPanel({
 			>
 				Select where you want to place the glass panel
 			</Text>
-			{/* Dimension Controls */}
-			{selectedPosition && selectedPosition !== 'none' && (
-				<div className="mt-8">
-					<Title
-						level={5}
-						className="mb-4"
-					>
-						Panel Dimensions
-					</Title>
-					<Collapse>
-						{getActivePanels().map((panel) => (
-							<Panel
-								header={`${
-									panel.charAt(0).toUpperCase() + panel.slice(1)
-								} Panel Dimensions`}
-								key={panel}
-							>
-								{renderDimensionControls(panel)}
-							</Panel>
-						))}
-					</Collapse>
-				</div>
-			)}
 
 			{/* Position Selection Grid */}
 			<div className="grid grid-cols-2 gap-0 mb-6">

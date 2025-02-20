@@ -224,10 +224,14 @@ const MyDocument = ({ config }) => {
 		selectedColor,
 		openingDirection,
 		glassPosition,
+		glassDimensions,
 		dimensions,
 		orderNumber = 'ORD-2024-001',
 		date = new Date().toLocaleDateString(),
 	} = config;
+
+	// Convert pixels to meters
+	const pxToM = (px) => ((px * 0.26) / 1000).toFixed(2);
 
 	const configData = [
 		{ label: 'Door Model', value: selectedDoor?.name || 'Not selected' },
@@ -240,16 +244,65 @@ const MyDocument = ({ config }) => {
 			label: 'Glass Position',
 			value: getGlassPositionDisplay(glassPosition),
 		},
-		{
-			label: 'Dimensions',
-			value: `${dimensions?.width || 359} px (W) x ${
-				dimensions?.height || 687
-			} px (H)`,
-		},
 	];
 
-	// Compute extra width for the top panel (if needed)
-	const topPanelExtraWidth = getTopPanelExtraWidth(glassPosition);
+	// Separate dimensions data
+	const dimensionsData = [
+		{
+			label: 'Door Width',
+			value: `${dimensions?.width || 359}px (${pxToM(
+				dimensions?.width || 359
+			)}m)`,
+		},
+		{
+			label: 'Door Height',
+			value: `${dimensions?.height || 687}px (${pxToM(
+				dimensions?.height || 687
+			)}m)`,
+		},
+	];
+	const getGlassPanelsData = (glassPosition, glassDimensions) => {
+		if (!glassPosition || glassPosition === 'none' || !glassDimensions)
+			return [];
+
+		const panels = [];
+
+		// Helper function to add panel data
+		const addPanel = (panelId) => {
+			const dims = glassDimensions[panelId];
+			if (dims) {
+				panels.push({
+					label: `${
+						panelId.charAt(0).toUpperCase() + panelId.slice(1).replace('-', ' ')
+					} Panel`,
+					value: `Width: ${dims.width || '0%'}, Height: ${dims.height || '0%'}`,
+				});
+			}
+		};
+
+		// Add panels based on glass position
+		if (glassPosition.includes('2left')) {
+			addPanel('2left-top');
+			addPanel('2left-bottom');
+		} else if (glassPosition.includes('left')) {
+			addPanel('left');
+		}
+
+		if (glassPosition.includes('2right')) {
+			addPanel('2right-top');
+			addPanel('2right-bottom');
+		} else if (glassPosition.includes('right')) {
+			addPanel('right');
+		}
+
+		if (glassPosition.includes('top')) {
+			addPanel('top');
+		}
+
+		return panels;
+	};
+	// Get glass panel data only for selected position
+	const glassPanelsData = getGlassPanelsData(glassPosition, glassDimensions);
 
 	return (
 		<Document>
@@ -269,7 +322,7 @@ const MyDocument = ({ config }) => {
 						</Text>
 					</View>
 					<Image
-						src="https://via.placeholder.com/120x60?text=Logo"
+						src="/assets/logo.png"
 						style={styles.logo}
 					/>
 				</View>
@@ -307,55 +360,95 @@ const MyDocument = ({ config }) => {
 					))}
 				</View>
 
-				{/* If top glass panel is present, render it directly without an extra wrapper */}
-				{/* {glassPosition && glassPosition.includes('top') && (
-					// Use the computed extra width for top panel
-					<SideGlassPanels
-						position="top"
-						type="single"
-						height={dimensions.topGlassHeight}
-						isTop={true}
-						width={dimensions.doorWidth + topPanelExtraWidth}
-					/>
-				)} */}
+				{/* Door Dimensions */}
+				<Text style={styles.sectionTitle}>Door Dimensions</Text>
+				<View style={styles.table}>
+					{dimensionsData.map((row, index) => (
+						<View
+							key={index}
+							style={[
+								styles.tableRow,
+								index % 2 === 0 ? styles.tableRowEven : {},
+							]}
+						>
+							<View style={styles.tableColHeader}>
+								<Text style={styles.tableCellHeader}>{row.label}</Text>
+							</View>
+							<View style={styles.tableCol}>
+								<Text style={styles.tableCell}>{row.value}</Text>
+							</View>
+						</View>
+					))}
+				</View>
+
+				{/* Glass Panel Dimensions - Only shown if glass panels are selected */}
+				{glassPanelsData.length > 0 && (
+					<>
+						<Text style={styles.sectionTitle}>Glass Panel Dimensions</Text>
+						<View style={styles.table}>
+							{glassPanelsData.map((row, index) => (
+								<View
+									key={index}
+									style={[
+										styles.tableRow,
+										index % 2 === 0 ? styles.tableRowEven : {},
+									]}
+								>
+									<View style={styles.tableColHeader}>
+										<Text style={styles.tableCellHeader}>{row.label}</Text>
+									</View>
+									<View style={styles.tableCol}>
+										<Text style={styles.tableCell}>{row.value}</Text>
+									</View>
+								</View>
+							))}
+						</View>
+					</>
+				)}
+
+				{/* Footer */}
+				<View style={styles.footer}>
+					<Text style={styles.footerText}>
+						This document was generated on {date}. All specifications are
+						subject to verification.
+					</Text>
+				</View>
 			</Page>
 
+			{/* Preview Page */}
 			<Page
 				size="A4"
 				style={styles.page}
 			>
-				{/* Preview Section */}
-				<View style={styles.previewSection}>
-					<Text style={styles.sectionTitle}>Product Preview</Text>
-					<View style={styles.previewContainer}>
-						<View style={styles.previewColumn}>
-							<Text style={styles.previewLabel}>Door Design</Text>
-							<View style={styles.imageContainer}>
-								<Image
-									src={
-										selectedColor
-											? selectedDoor.color_variants[selectedColor.id]
-													?.door_image_url
-											: selectedDoor.main_image_url
-									}
-									style={styles.doorImage}
-								/>
-							</View>
+				<Text style={styles.sectionTitle}>Product Preview</Text>
+				<View style={styles.previewContainer}>
+					<View style={styles.previewColumn}>
+						<Text style={styles.previewLabel}>Door Design</Text>
+						<View style={styles.imageContainer}>
+							<Image
+								src={
+									selectedColor
+										? selectedDoor.color_variants[selectedColor.id]
+												?.door_image_url
+										: selectedDoor.main_image_url
+								}
+								style={styles.doorImage}
+							/>
 						</View>
-						<View style={styles.previewColumn}>
-							<Text style={styles.previewLabel}>Color Sample</Text>
-							<View style={styles.colorSampleContainer}>
-								<Image
-									src={
-										selectedColor?.sampleImage ||
-										(selectedColor
-											? selectedDoor.color_variants[selectedColor.id]
-													?.sample_image_url
-											: '')
-									}
-									style={styles.colorSample}
-								/>
-							</View>
+					</View>
+					<View style={styles.previewColumn}>
+						<Text style={styles.previewLabel}>Color Sample</Text>
+						<View style={styles.colorSampleContainer}>
+							<Image
+								src={
+									selectedColor?.sampleImage ||
+									(selectedColor
+										? selectedDoor.color_variants[selectedColor.id]
+												?.sample_image_url
+										: '')
+								}
+								style={styles.colorSample}
+							/>
 						</View>
 					</View>
 				</View>
@@ -363,8 +456,6 @@ const MyDocument = ({ config }) => {
 				{/* Footer */}
 				<View style={styles.footer}>
 					<Text style={styles.footerText}>
-						This document was generated on {date}. All specifications are
-						subject to verification and confirmation by our technical team.
 						Colors shown are representative and may vary slightly from the
 						actual product.
 					</Text>
@@ -413,7 +504,7 @@ const InquiryPanel = ({ config }) => {
 						className="flex border-b border-gray-200 pb-3"
 					>
 						<span className="w-1/3 font-semibold text-gray-700">
-							{item.label}:
+							{item?.label}:
 						</span>
 						<span className="w-2/3 text-gray-600">{item.value}</span>
 					</div>
