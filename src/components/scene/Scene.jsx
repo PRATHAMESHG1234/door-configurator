@@ -1,4 +1,3 @@
-// Scene.jsx
 import React from 'react';
 
 function SideGlassPanels({
@@ -32,6 +31,13 @@ function SideGlassPanels({
 		return glassDimensions[position];
 	};
 
+	const getDefaultWidth = (index) => {
+		if (type === 'double') {
+			return '50%'; // Each panel in double gets 22%
+		}
+		return '30%'; // Single panel remains at 30%
+	};
+
 	if (isTop) {
 		const topDims = getGlassDimensions();
 
@@ -51,19 +57,8 @@ function SideGlassPanels({
 							: topDims?.height
 							? `${topDims.height}`
 							: '100%',
-						top:
-							doorConfig?.glassPosition?.includes('2left') ||
-							doorConfig?.glassPosition?.includes('2right') ||
-							doorConfig?.glassPosition === 'top+left+right'
-								? '63%'
-								: doorConfig?.glassPosition === 'top'
-								? '73%'
-								: '68%',
-						left:
-							doorConfig?.glassPosition?.includes('2left') ||
-							doorConfig?.glassPosition?.includes('2right')
-								? '46%'
-								: '49%',
+						top: '68%',
+						left: '50%',
 						transform: 'translate(-50%, -50%) rotate(90deg)',
 						transformOrigin: 'center center',
 					}}
@@ -79,15 +74,11 @@ function SideGlassPanels({
 	}
 
 	return (
-		<div className="w-full h-full flex">
+		<div className={`h-full flex ${position === 'left' ? 'justify-end' : ''}`}>
 			{Array.from({ length: panelCount }).map((_, i) => {
 				const dims = getGlassDimensions(i);
 				const panelStyle = {
-					width: dims?.width
-						? `${dims.width}`
-						: type === 'double'
-						? '30%'
-						: '22%',
+					width: dims?.width ? `${dims.width}` : getDefaultWidth(i),
 					height: dims?.height ? `${dims.height}` : '100%',
 				};
 
@@ -138,54 +129,21 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 	const calculateDimensions = () => {
 		const baseWidth = doorConfig.dimensions?.width || BASE_WIDTH;
 		const doorHeight = doorConfig.dimensions?.height || BASE_HEIGHT;
-		const singleGlassWidth = baseWidth * 0.3;
-		const doubleGlassWidth = baseWidth * 0.6;
-		const topGlassHeight = doorHeight * 0.2;
 
 		let totalWidth = baseWidth;
 		let totalHeight = doorHeight;
 		let mainContentHeight = doorHeight;
 		let adjustedDoorWidth = baseWidth;
 
-		// Calculate glass panel actual widths
-		const getActualGlassWidth = (type) => {
-			const dims = doorConfig?.glassDimensions?.[type];
-			const width = parseFloat(dims?.width || '100');
-			return width / 100; // Convert percentage to decimal
-		};
-
-		// Calculate space taken by glass panels
 		if (doorConfig.glassPosition?.includes('left')) {
-			const baseSpace = doorConfig.glassPosition.includes('2left')
-				? doubleGlassWidth
-				: singleGlassWidth;
-			const glassType = doorConfig.glassPosition.includes('2left')
-				? '2left-top'
-				: 'left';
-			const actualWidthRatio = getActualGlassWidth(glassType);
-			const actualSpace = baseSpace * actualWidthRatio;
-			const extraSpace = baseSpace - actualSpace;
-			adjustedDoorWidth += extraSpace;
-			totalWidth += actualSpace;
+			totalWidth += baseWidth * 0.3;
 		}
-
 		if (doorConfig.glassPosition?.includes('right')) {
-			const baseSpace = doorConfig.glassPosition.includes('2right')
-				? doubleGlassWidth
-				: singleGlassWidth;
-			const glassType = doorConfig.glassPosition.includes('2right')
-				? '2right-top'
-				: 'right';
-			const actualWidthRatio = getActualGlassWidth(glassType);
-			const actualSpace = baseSpace * actualWidthRatio;
-			const extraSpace = baseSpace - actualSpace;
-			adjustedDoorWidth += extraSpace;
-			totalWidth += actualSpace;
+			totalWidth += baseWidth * 0.3;
 		}
 
-		// Adjust heights for top panel
 		if (doorConfig.glassPosition?.includes('top')) {
-			totalHeight = doorHeight + topGlassHeight;
+			totalHeight += doorHeight * 0.2;
 			mainContentHeight = doorHeight;
 		}
 
@@ -200,11 +158,12 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 			doorHeight,
 			widthScale,
 			heightScale,
-			topGlassHeight,
+			topGlassHeight: doorHeight * 0.2,
 		};
 	};
 
 	const dimensions = calculateDimensions();
+
 	const topPanelExtraWidth = (() => {
 		const hasLeft = doorConfig.glassPosition?.includes('left');
 		const hasRight = doorConfig.glassPosition?.includes('right');
@@ -300,15 +259,7 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 						<div className="flex flex-1">
 							{/* Left Glass Panel */}
 							{doorConfig.glassPosition?.includes('left') && (
-								<div
-									className="h-full"
-									style={{
-										width: doorConfig.glassPosition.includes('2left')
-											? '30%'
-											: '22%',
-										marginRight: '0',
-									}}
-								>
+								<div className="h-full flex justify-end">
 									<SideGlassPanels
 										doorConfig={doorConfig}
 										position="left"
@@ -324,19 +275,13 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 
 							{/* Door Image */}
 							<div
-								className="h-full justify-center items-center cursor-pointer"
+								className="h-full flex items-center justify-center cursor-pointer"
 								onClick={() => onSelect?.()}
 								role="button"
 								tabIndex={0}
 								style={{
 									width: `${dimensions.doorWidth}px`,
 									height: `${dimensions.mainContentHeight}px`,
-									marginLeft: !doorConfig.glassPosition?.includes('left')
-										? 'auto'
-										: '0',
-									marginRight: !doorConfig.glassPosition?.includes('right')
-										? 'auto'
-										: '0',
 								}}
 							>
 								<img
@@ -354,15 +299,7 @@ export function Scene({ doorConfig, onSelect, onDeselect }) {
 
 							{/* Right Glass Panel */}
 							{doorConfig.glassPosition?.includes('right') && (
-								<div
-									className="h-full"
-									style={{
-										width: doorConfig.glassPosition.includes('2right')
-											? '30%'
-											: '22%',
-										marginLeft: '0',
-									}}
-								>
+								<div className="h-full">
 									<SideGlassPanels
 										doorConfig={doorConfig}
 										position="right"

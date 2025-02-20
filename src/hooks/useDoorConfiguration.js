@@ -13,56 +13,33 @@ export const useDoorConfiguration = (initialConfig = {}) => {
 		openingDirection: initialConfig.openingDirection || 'left',
 		glassPosition: initialConfig.glassPosition || null,
 		glassDimensions: initialConfig.glassDimensions || {
-			// Single top panel
 			top: {
-				width: '100%', // Full width for top panel
-				height: '20%', // Matches your current calculation
-				top: '0%',
-				left: '0%',
+				width: '80', // percentage
+				height: '80', // percentage
 			},
-
-			// Single left panel
 			left: {
-				width: '22%', // Matches your current CSS width
-				height: '100%', // Full height for side panels
-				top: '0%',
-				left: '0%',
+				width: '30%',
+				height: '80',
 			},
-
-			// Single right panel
 			right: {
-				width: '22%', // Matches your current CSS width
-				height: '100%', // Full height for side panels
-				top: '0%',
-				right: '0%',
+				width: '30%',
+				height: '80',
 			},
-
-			// Double left panels
 			'2left-top': {
-				width: '30%', // Matches your current CSS width for double panels
-				height: '48%', // Roughly half height for double panels
-				top: '0%',
-				left: '0%',
+				width: '30%',
+				height: '40',
 			},
 			'2left-bottom': {
-				width: '30%', // Matches your current CSS width for double panels
-				height: '48%', // Roughly half height for double panels
-				top: '52%', // Positioned below top panel with small gap
-				left: '0%',
+				width: '30%',
+				height: '40',
 			},
-
-			// Double right panels
 			'2right-top': {
-				width: '30%', // Matches your current CSS width for double panels
-				height: '48%', // Roughly half height for double panels
-				top: '0%',
-				right: '0%',
+				width: '30%',
+				height: '40',
 			},
 			'2right-bottom': {
-				width: '30%', // Matches your current CSS width for double panels
-				height: '48%', // Roughly half height for double panels
-				top: '52%', // Positioned below top panel with small gap
-				right: '0%',
+				width: '30%',
+				height: '40',
 			},
 		},
 		dimensions: initialConfig.dimensions || {
