@@ -198,6 +198,10 @@ export function DoorConfigurator() {
 			<DimensionsPanel
 				dimensions={config.dimensions}
 				onDimensionsChange={updateDimensions}
+				selectedPosition={config.glassPosition}
+				setSelectedPosition={updateGlassPosition}
+				glassDimensions={config.glassDimensions} // Make sure this is passed
+				updateGlassDimensions={updateGlassDimensions}
 			/>
 		),
 		inquiry: <InquiryPanel config={config} />,

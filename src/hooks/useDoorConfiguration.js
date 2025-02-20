@@ -13,10 +13,6 @@ export const useDoorConfiguration = (initialConfig = {}) => {
 		openingDirection: initialConfig.openingDirection || 'left',
 		glassPosition: initialConfig.glassPosition || null,
 		glassDimensions: initialConfig.glassDimensions || {
-			top: {
-				width: '80', // percentage
-				height: '80', // percentage
-			},
 			left: {
 				width: '30%',
 				height: '80',

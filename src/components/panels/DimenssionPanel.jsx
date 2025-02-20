@@ -1,41 +1,46 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import {
-	Card,
-	Typography,
-	Row,
-	Col,
-	Slider,
-	Input,
-	Space,
-	Button,
-	Tooltip,
-} from 'antd';
-import { useState, useEffect } from 'react';
-import { FullscreenOutlined, UndoOutlined } from '@ant-design/icons';
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '@/components/ui/accordion';
+import { RotateCcw } from 'lucide-react';
 
-const { Title, Text } = Typography;
+// Convert pixels to meters (assuming 1 pixel = 0.26mm)
+const pxToM = (px) => ((px * 0.26) / 1000).toFixed(2);
+const mToPx = (m) => Math.round((m * 1000) / 0.26);
 
-// Define dimension constraints
 const DIMENSIONS = {
 	width: {
-		min: 300,
-		max: 500,
-		default: 359,
+		min: 300, // ~78cm
+		max: 500, // ~130cm
+		default: 359, // ~93cm
 	},
 	height: {
-		min: 600,
-		max: 800,
-		default: 687,
+		min: 600, // ~156cm
+		max: 800, // ~208cm
+		default: 687, // ~179cm
 	},
 };
 
-export function DimensionsPanel({ dimensions, onDimensionsChange }) {
-	// Local state for handling input values
+export function DimensionsPanel({
+	dimensions,
+	onDimensionsChange,
+	selectedPosition,
+	glassDimensions = {},
+	updateGlassDimensions,
+}) {
 	const [localDimensions, setLocalDimensions] = useState({
 		width: dimensions?.width || DIMENSIONS.width.default,
 		height: dimensions?.height || DIMENSIONS.height.default,
 	});
 
-	// Update local state when props change
 	useEffect(() => {
 		setLocalDimensions({
 			width: dimensions?.width || DIMENSIONS.width.default,
@@ -43,30 +48,28 @@ export function DimensionsPanel({ dimensions, onDimensionsChange }) {
 		});
 	}, [dimensions]);
 
-	// Handle slider changes
-	const handleSliderChange = (type) => (value) => {
+	const handleSliderChange = (type, value) => {
 		const newDimensions = {
 			...localDimensions,
-			[type]: value,
+			[type]: value[0],
 		};
 		setLocalDimensions(newDimensions);
 		onDimensionsChange(newDimensions);
 	};
 
-	// Handle input changes
-	const handleInputChange = (type) => (e) => {
-		const value = parseInt(e.target.value) || 0;
-		if (value >= DIMENSIONS[type].min && value <= DIMENSIONS[type].max) {
+	const handleInputChange = (type, value) => {
+		// Convert meter input to pixels
+		const pxValue = mToPx(parseFloat(value)) || 0;
+		if (pxValue >= DIMENSIONS[type].min && pxValue <= DIMENSIONS[type].max) {
 			const newDimensions = {
 				...localDimensions,
-				[type]: value,
+				[type]: pxValue,
 			};
 			setLocalDimensions(newDimensions);
 			onDimensionsChange(newDimensions);
 		}
 	};
 
-	// Handle reset
 	const handleReset = () => {
 		const defaultDimensions = {
 			width: DIMENSIONS.width.default,
@@ -76,219 +79,186 @@ export function DimensionsPanel({ dimensions, onDimensionsChange }) {
 		onDimensionsChange(defaultDimensions);
 	};
 
-	return (
-		<div className="dimensions-panel">
-			<div className="panel-header">
-				<Title
-					level={4}
-					className="panel-title"
-				>
-					Door Dimensions
-				</Title>
-				<Tooltip title="Reset to Default">
-					<Button
-						icon={<UndoOutlined />}
-						onClick={handleReset}
-						type="text"
-					>
-						Reset
-					</Button>
-				</Tooltip>
+	const getActivePanels = () => {
+		if (!selectedPosition || selectedPosition === 'none') return [];
+
+		const panels = [];
+		if (selectedPosition.includes('2left')) {
+			panels.push('2left-top', '2left-bottom');
+		} else if (selectedPosition.includes('left')) {
+			panels.push('left');
+		}
+		if (selectedPosition.includes('2right')) {
+			panels.push('2right-top', '2right-bottom');
+		} else if (selectedPosition.includes('right')) {
+			panels.push('right');
+		}
+		return panels;
+	};
+
+	const handleGlassDimensionChange = (panel, dimension, value) => {
+		const newValue = typeof value === 'number' ? `${value}%` : value;
+		updateGlassDimensions(panel, { [dimension]: newValue });
+	};
+
+	const renderDimensionControl = (type) => (
+		<div className="space-y-2">
+			<div className="flex items-center justify-between">
+				<span className="text-sm font-medium capitalize">{type}</span>
+				<span className="text-xs text-muted-foreground">
+					{pxToM(DIMENSIONS[type].min)}-{pxToM(DIMENSIONS[type].max)}m
+				</span>
 			</div>
+			<div className="flex gap-3 items-center">
+				<div className="flex-1 bg-muted rounded-md px-2 py-3">
+					<Slider
+						value={[localDimensions[type]]}
+						min={DIMENSIONS[type].min}
+						max={DIMENSIONS[type].max}
+						step={1}
+						onValueChange={(value) => handleSliderChange(type, value)}
+						className="flex-1"
+					/>
+				</div>
+				<div className="w-24">
+					<Input
+						type="number"
+						value={pxToM(localDimensions[type])}
+						onChange={(e) => handleInputChange(type, e.target.value)}
+						min={pxToM(DIMENSIONS[type].min)}
+						max={pxToM(DIMENSIONS[type].max)}
+						step={0.01}
+						className="w-full"
+					/>
+				</div>
+			</div>
+		</div>
+	);
 
-			<Card className="dimensions-card">
-				<Row gutter={[24, 24]}>
-					{/* Width Control */}
-					<Col
-						xs={24}
-						sm={12}
-					>
-						<div className="dimension-control">
-							<div className="dimension-header">
-								<FullscreenOutlined className="dimension-icon" />
-								<Text strong>Width</Text>
-							</div>
-							<Space
-								direction="vertical"
-								className="w-full"
-							>
-								<div className="input-group">
-									<Input
-										value={localDimensions.width}
-										onChange={handleInputChange('width')}
-										suffix="px"
-										type="number"
-										min={DIMENSIONS.width.min}
-										max={DIMENSIONS.width.max}
-									/>
-								</div>
-								<Slider
-									value={localDimensions.width}
-									min={DIMENSIONS.width.min}
-									max={DIMENSIONS.width.max}
-									onChange={handleSliderChange('width')}
-									tooltip={{
-										formatter: (value) => `${value}px`,
-									}}
-								/>
-								<Text
-									type="secondary"
-									className="dimension-range"
-								>
-									Range: {DIMENSIONS.width.min}px - {DIMENSIONS.width.max}px
-								</Text>
-							</Space>
+	const renderGlassDimensionControls = (panel) => {
+		const dimensions = glassDimensions[panel] || {};
+		const parseValue = (value) => parseInt(value) || 0;
+
+		return (
+			<div className="space-y-4">
+				<div className="space-y-2">
+					<div className="flex items-center justify-between">
+						<span className="text-sm font-medium">Width</span>
+						<span className="text-xs text-muted-foreground">%</span>
+					</div>
+					<div className="flex gap-3 items-center">
+						<div className="flex-1 bg-muted rounded-md px-2 py-3">
+							<Slider
+								value={[parseValue(dimensions.width)]}
+								min={0}
+								max={100}
+								step={1}
+								onValueChange={(value) =>
+									handleGlassDimensionChange(panel, 'width', value[0])
+								}
+								className=""
+							/>
 						</div>
-					</Col>
-
-					{/* Height Control */}
-					<Col
-						xs={24}
-						sm={12}
-					>
-						<div className="dimension-control">
-							<div className="dimension-header">
-								<FullscreenOutlined
-									className="dimension-icon"
-									style={{ transform: 'rotate(90deg)' }}
-								/>
-								<Text strong>Height</Text>
-							</div>
-							<Space
-								direction="vertical"
-								className="w-full"
-							>
-								<div className="input-group">
-									<Input
-										value={localDimensions.height}
-										onChange={handleInputChange('height')}
-										suffix="px"
-										type="number"
-										min={DIMENSIONS.height.min}
-										max={DIMENSIONS.height.max}
-									/>
-								</div>
-								<Slider
-									value={localDimensions.height}
-									min={DIMENSIONS.height.min}
-									max={DIMENSIONS.height.max}
-									onChange={handleSliderChange('height')}
-									tooltip={{
-										formatter: (value) => `${value}px`,
-									}}
-								/>
-								<Text
-									type="secondary"
-									className="dimension-range"
-								>
-									Range: {DIMENSIONS.height.min}px - {DIMENSIONS.height.max}px
-								</Text>
-							</Space>
-						</div>
-					</Col>
-				</Row>
-
-				{/* Door Preview */}
-				<div className="preview-section">
-					<div
-						className="door-preview"
-						style={{
-							width: `${(localDimensions.width / DIMENSIONS.width.max) * 100}%`,
-							height: `${
-								(localDimensions.height / DIMENSIONS.height.max) * 100
-							}%`,
-						}}
-					>
-						<div className="door-handle" />
+						<Input
+							type="number"
+							value={parseValue(dimensions.width)}
+							onChange={(e) =>
+								handleGlassDimensionChange(panel, 'width', e.target.value)
+							}
+							min={0}
+							max={100}
+							className="w-16"
+						/>
 					</div>
 				</div>
+				<div className="space-y-2">
+					<div className="flex items-center justify-between">
+						<span className="text-sm font-medium">Height</span>
+						<span className="text-xs text-muted-foreground">%</span>
+					</div>
+					<div className="flex gap-3 items-center">
+						<div className="flex-1 bg-muted rounded-md px-2 py-3">
+							<Slider
+								value={[parseValue(dimensions.height)]}
+								min={0}
+								max={100}
+								step={1}
+								onValueChange={(value) =>
+									handleGlassDimensionChange(panel, 'height', value[0])
+								}
+								className="flex-1 [&_[role=slider]]:h-4 [&_[role=slider]]:w-4 [&_[role=slider]]:border-blue-500/50 [&_[role=slider]]:bg-black [&_track]:h-2 [&_track]:bg-blue-500/20 [&_range]:bg-blue-500"
+							/>
+						</div>
+						<Input
+							type="number"
+							value={parseValue(dimensions.height)}
+							onChange={(e) =>
+								handleGlassDimensionChange(panel, 'height', e.target.value)
+							}
+							min={0}
+							max={100}
+							className="w-16"
+						/>
+					</div>
+				</div>
+			</div>
+		);
+	};
+
+	return (
+		<div className="space-y-4 p-10">
+			<div className="flex items-center justify-between">
+				<h3 className="font-semibold">Door Dimensions</h3>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={handleReset}
+				>
+					<RotateCcw className="h-3 w-3 mr-2" />
+					Reset
+				</Button>
+			</div>
+
+			<Card className="shadow-none border-none">
+				<CardContent className="p-0 space-y-4">
+					{renderDimensionControl('width')}
+					{renderDimensionControl('height')}
+				</CardContent>
 			</Card>
 
-			<style jsx>{`
-				.dimensions-panel {
-					padding: 20px 0;
-				}
-
-				.panel-header {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					margin-bottom: 24px;
-				}
-
-				.panel-title {
-					margin: 0 !important;
-				}
-
-				.dimensions-card {
-					border-radius: 8px;
-				}
-
-				.dimension-control {
-					display: flex;
-					flex-direction: column;
-					gap: 16px;
-				}
-
-				.dimension-header {
-					display: flex;
-					align-items: center;
-					gap: 8px;
-					margin-bottom: 8px;
-				}
-
-				.dimension-icon {
-					color: #1890ff;
-					font-size: 20px;
-				}
-
-				.input-group {
-					width: 100%;
-				}
-
-				.dimension-range {
-					font-size: 12px;
-				}
-
-				.preview-section {
-					margin-top: 24px;
-					padding: 24px;
-					background-color: #f5f5f5;
-					border-radius: 8px;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					min-height: 200px;
-					position: relative;
-				}
-
-				.door-preview {
-					background-color: #ffffff;
-					border: 2px solid #d9d9d9;
-					border-radius: 4px;
-					position: relative;
-					transition: all 0.3s ease;
-					max-width: 100px;
-					max-height: 180px;
-				}
-
-				.door-handle {
-					position: absolute;
-					right: 10%;
-					top: 50%;
-					width: 20%;
-					height: 10%;
-					background-color: #1890ff;
-					border-radius: 4px;
-					transform: translateY(-50%);
-				}
-
-				@media (max-width: 768px) {
-					.preview-section {
-						min-height: 160px;
-					}
-				}
-			`}</style>
+			{selectedPosition &&
+				selectedPosition !== 'none' &&
+				getActivePanels().length > 0 && (
+					<>
+						<Separator className="my-4" />
+						<div className="space-y-4">
+							<h3 className="font-semibold">Glass Panel Dimensions</h3>
+							<Accordion
+								type="single"
+								collapsible
+								className="w-full"
+							>
+								{getActivePanels().map((panel) => (
+									<AccordionItem
+										key={panel}
+										value={panel}
+									>
+										<AccordionTrigger className="text-sm py-2">
+											{panel.charAt(0).toUpperCase() +
+												panel.slice(1).replace('-', ' ')}{' '}
+											Panel
+										</AccordionTrigger>
+										<AccordionContent className="pt-2">
+											{renderGlassDimensionControls(panel)}
+										</AccordionContent>
+									</AccordionItem>
+								))}
+							</Accordion>
+						</div>
+					</>
+				)}
 		</div>
 	);
 }
+
+export default DimensionsPanel;
