@@ -29,6 +29,30 @@ const DIMENSIONS = {
 	},
 };
 
+// Helper function to get formatted panel name
+const getPanelDisplayName = (panel) => {
+	switch (panel) {
+		case '2left-top':
+			return 'Left Outer Panel';
+		case '2left-bottom':
+			return 'Left Inner Panel';
+		case '2right-top':
+			return 'Right Inner Panel';
+		case '2right-bottom':
+			return 'Right Outer Panel';
+		case 'left':
+			return 'Left Panel';
+		case 'right':
+			return 'Right Panel';
+		default:
+			return (
+				panel.charAt(0).toUpperCase() +
+				panel.slice(1).replace('-', ' ') +
+				' Panel'
+			);
+	}
+};
+
 export function DimensionsPanel({
 	dimensions,
 	onDimensionsChange,
@@ -156,7 +180,7 @@ export function DimensionsPanel({
 								onValueChange={(value) =>
 									handleGlassDimensionChange(panel, 'width', value[0])
 								}
-								className=""
+								className="flex-1"
 							/>
 						</div>
 						<Input
@@ -186,7 +210,7 @@ export function DimensionsPanel({
 								onValueChange={(value) =>
 									handleGlassDimensionChange(panel, 'height', value[0])
 								}
-								className="flex-1 [&_[role=slider]]:h-4 [&_[role=slider]]:w-4 [&_[role=slider]]:border-blue-500/50 [&_[role=slider]]:bg-black [&_track]:h-2 [&_track]:bg-blue-500/20 [&_range]:bg-blue-500"
+								className="flex-1"
 							/>
 						</div>
 						<Input
@@ -244,9 +268,7 @@ export function DimensionsPanel({
 										value={panel}
 									>
 										<AccordionTrigger className="text-sm py-2">
-											{panel.charAt(0).toUpperCase() +
-												panel.slice(1).replace('-', ' ')}{' '}
-											Panel
+											{getPanelDisplayName(panel)}
 										</AccordionTrigger>
 										<AccordionContent className="pt-2">
 											{renderGlassDimensionControls(panel)}
